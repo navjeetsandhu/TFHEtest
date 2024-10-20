@@ -34,24 +34,22 @@ public:
 
     void execute_reverse_int(double *res, const int32_t *a);
 
-    void execute_reverse_uint(double *res, const uint32_t *a);
-
     void execute_reverse_torus32(double *res, const uint32_t *a);
 
     void execute_direct_torus32(uint32_t *res, const double *a);
     
     void execute_direct_torus32_q(uint32_t *res, const double *a, const uint32_t q);
 
-    void execute_direct_torus32_rescale(uint32_t *res, const double *a, const double Δ);
+    void execute_direct_torus32_rescale(uint32_t *res, const double *a, const double delta);
 
     void execute_reverse_torus64(double* res, const uint64_t* a);
     
     void execute_direct_torus64(uint64_t* res, const double* a);
 
-    void execute_direct_torus64_rescale(uint64_t* res, const double* a, const double Δ);
+    void execute_direct_torus64_rescale(uint64_t* res, const double* a, const double delta);
 
     ~FFT_Processor_Spqlios();
 };
 
-extern thread_local FFT_Processor_Spqlios fftplvl1;
-extern thread_local FFT_Processor_Spqlios fftplvl2;
+constexpr uint32_t N_FFT = 64;
+extern thread_local FFT_Processor_Spqlios fftp;
