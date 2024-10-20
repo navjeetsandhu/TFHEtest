@@ -25,15 +25,15 @@ void bkgen(BootstrappingKey<P>& bk, const Key<typename P::domainP>& domainkey,
         plainpoly[0] =
             static_cast<int32_t>(domainkey[2 * i] * domainkey[2 * i + 1]);
         bk[i][0] = trgswSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::α, targetkey);
+            plainpoly, P::targetP::alpha, targetkey);
         plainpoly[0] =
             static_cast<int32_t>(domainkey[2 * i] * (1 - domainkey[2 * i + 1]));
         bk[i][1] = trgswSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::α, targetkey);
+            plainpoly, P::targetP::alpha, targetkey);
         plainpoly[0] =
             static_cast<int32_t>((1 - domainkey[2 * i]) * domainkey[2 * i + 1]);
         bk[i][2] = trgswSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::α, targetkey);
+            plainpoly, P::targetP::alpha, targetkey);
     }
 #else
     for (int i = 0; i < P::domainP::k * P::domainP::n; i++) {
@@ -69,15 +69,15 @@ void bkfftgen(BootstrappingKeyFFT<P>& bkfft,
         plainpoly[0] =
             static_cast<int32_t>(domainkey[2 * i] * domainkey[2 * i + 1]);
         bkfft[i][0] = trgswfftSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::α, targetkey);
+            plainpoly, P::targetP::alpha, targetkey);
         plainpoly[0] =
             static_cast<int32_t>(domainkey[2 * i] * (1 - domainkey[2 * i + 1]));
         bkfft[i][1] = trgswfftSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::α, targetkey);
+            plainpoly, P::targetP::alpha, targetkey);
         plainpoly[0] =
             static_cast<int32_t>((1 - domainkey[2 * i]) * domainkey[2 * i + 1]);
         bkfft[i][2] = trgswfftSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::α, targetkey);
+            plainpoly, P::targetP::alpha, targetkey);
     }
 #else
     for (int i = 0; i < P::domainP::k * P::domainP::n; i++) {
@@ -169,22 +169,15 @@ void tlwe2trlweikskgen(TLWE2TRLWEIKSKey<P>& iksk, const SecretKey& sk)
 }
 
 template <class P>
-void evalautokeygen(EvalAutoKey<P>& eak, const uint d, const Key<P>& key)
-{
-    for(int j = 0; j < P::k; j++) {
-        Polynomial<P> autokey;
-        std::array<typename P::T, P::n> partkey;
-        for (int k = 0; k < P::n; k++) partkey[k] = key[j * P::n + k];
-        Automorphism<P>(autokey, partkey, d);
-        eak[j] = halftrgswfftSymEncrypt<P>(autokey, key);
-    }
-}
-
-template <class P>
 void annihilatekeygen(AnnihilateKey<P>& ahk, const Key<P>& key)
 {
-    for (int i = 0; i < P::nbit; i++)
-        evalautokeygen<P>(ahk[i], (1 << (P::nbit - i)) + 1, key);
+    for (int i = 0; i < P::nbit; i++) {
+        Polynomial<P> autokey;
+        std::array<typename P::T, P::n> partkey;
+        for (int i = 0; i < P::n; i++) partkey[i] = key[0 * P::n + i];
+        Automorphism<P>(autokey, partkey, (1 << (P::nbit - i)) + 1);
+        ahk[i] = trgswfftSymEncrypt<P>(autokey, key);
+    }
 }
 
 template <class P>
@@ -200,7 +193,7 @@ void ikskgen(KeySwitchingKey<P>& ksk, const Key<typename P::domainP>& domainkey,
     for (int l = 0; l < P::domainP::k; l++)
         for (int i = 0; i < P::domainP::n; i++)
             for (int j = 0; j < P::t; j++)
-                for (uint32_t k = 0; k < 1U << (P::basebit - 1); k++)
+                for (uint32_t k = 0; k < (1 << P::basebit) - 1; k++)
                     ksk[l * P::domainP::n + i][j][k] =
                         tlweSymEncrypt<typename P::targetP>(
                             domainkey[l * P::domainP::n + i] * (k + 1) *
@@ -230,8 +223,7 @@ void privkskgen(PrivateKeySwitchingKey<P>& privksk,
 #pragma omp parallel for collapse(3)
     for (int i = 0; i <= P::domainP::k * P::domainP::n; i++)
         for (int j = 0; j < P::t; j++)
-            for (typename P::targetP::T u = 0; u < (1 << (P::basebit - 1));
-                 u++) {
+            for (typename P::targetP::T u = 0; u < (1 << P::basebit) - 1; u++) {
                 TRLWE<typename P::targetP> c =
                     trlweSymEncryptZero<typename P::targetP>(targetkey);
                 for (int k = 0; k < P::targetP::n; k++)
@@ -360,7 +352,6 @@ struct EvalKey {
     std::shared_ptr<KeySwitchingKey<lvl10param>> iksklvl10;
     std::shared_ptr<KeySwitchingKey<lvl1hparam>> iksklvl1h;
     std::shared_ptr<KeySwitchingKey<lvl20param>> iksklvl20;
-    std::shared_ptr<KeySwitchingKey<lvl2hparam>> iksklvl2h;
     std::shared_ptr<KeySwitchingKey<lvl21param>> iksklvl21;
     std::shared_ptr<KeySwitchingKey<lvl22param>> iksklvl22;
     std::shared_ptr<KeySwitchingKey<lvl31param>> iksklvl31;
@@ -400,22 +391,22 @@ struct EvalKey {
     {
         if constexpr (std::is_same_v<P, lvl01param>) {
             bklvl01 =
-                std::make_unique_for_overwrite<BootstrappingKey<lvl01param>>();
+                std::make_unique<BootstrappingKey<lvl01param>>();
             bkgen<lvl01param>(*bklvl01, sk);
         }
         else if constexpr (std::is_same_v<P, lvlh1param>) {
             bklvlh1 =
-                std::make_unique_for_overwrite<BootstrappingKey<lvlh1param>>();
+                std::make_unique<BootstrappingKey<lvlh1param>>();
             bkgen<lvlh1param>(*bklvlh1, sk);
         }
         else if constexpr (std::is_same_v<P, lvl02param>) {
             bklvl02 =
-                std::make_unique_for_overwrite<BootstrappingKey<lvl02param>>();
+                std::make_unique<BootstrappingKey<lvl02param>>();
             bkgen<lvl02param>(*bklvl02, sk);
         }
         else if constexpr (std::is_same_v<P, lvlh2param>) {
             bklvlh2 =
-                std::make_unique_for_overwrite<BootstrappingKey<lvlh2param>>();
+                std::make_unique<BootstrappingKey<lvlh2param>>();
             bkgen<lvlh2param>(*bklvlh2, sk);
         }
         else
@@ -451,22 +442,22 @@ struct EvalKey {
     void emplacebkntt(const SecretKey& sk)
     {
         if constexpr (std::is_same_v<P, lvl01param>) {
-            bknttlvl01 = std::make_unique_for_overwrite<
+            bknttlvl01 = std::make_unique<
                 BootstrappingKeyNTT<lvl01param>>();
             bknttgen<lvl01param>(*bknttlvl01, sk);
         }
         else if constexpr (std::is_same_v<P, lvlh1param>) {
-            bknttlvlh1 = std::make_unique_for_overwrite<
+            bknttlvlh1 = std::make_unique<
                 BootstrappingKeyNTT<lvlh1param>>();
             bknttgen<lvlh1param>(*bknttlvlh1, sk);
         }
         else if constexpr (std::is_same_v<P, lvl02param>) {
-            bknttlvl02 = std::make_unique_for_overwrite<
+            bknttlvl02 = std::make_unique<
                 BootstrappingKeyNTT<lvl02param>>();
             bknttgen<lvl02param>(*bknttlvl02, sk);
         }
         else if constexpr (std::is_same_v<P, lvlh2param>) {
-            bknttlvlh2 = std::make_unique_for_overwrite<
+            bknttlvlh2 = std::make_unique<
                 BootstrappingKeyNTT<lvlh2param>>();
             bknttgen<lvlh2param>(*bknttlvlh2, sk);
         }
@@ -477,28 +468,28 @@ struct EvalKey {
     void emplacebk2bkfft()
     {
         if constexpr (std::is_same_v<P, lvl01param>) {
-            bkfftlvl01 = std::make_unique_for_overwrite<
+            bkfftlvl01 = std::make_unique<
                 BootstrappingKeyFFT<lvl01param>>();
             for (int i = 0; i < lvl01param::domainP::n; i++)
                 (*bkfftlvl01)[i][0] =
                     ApplyFFT2trgsw<lvl1param>((*bklvl01)[i][0]);
         }
         else if constexpr (std::is_same_v<P, lvlh1param>) {
-            bkfftlvlh1 = std::make_unique_for_overwrite<
+            bkfftlvlh1 = std::make_unique<
                 BootstrappingKeyFFT<lvlh1param>>();
             for (int i = 0; i < lvlh1param::domainP::n; i++)
                 (*bkfftlvlh1)[i][0] =
                     ApplyFFT2trgsw<lvl1param>((*bklvlh1)[i][0]);
         }
         else if constexpr (std::is_same_v<P, lvl02param>) {
-            bkfftlvl02 = std::make_unique_for_overwrite<
+            bkfftlvl02 = std::make_unique<
                 BootstrappingKeyFFT<lvl02param>>();
             for (int i = 0; i < lvl02param::domainP::n; i++)
                 (*bkfftlvl02)[i][0] =
                     ApplyFFT2trgsw<lvl2param>((*bklvl02)[i][0]);
         }
         else if constexpr (std::is_same_v<P, lvlh2param>) {
-            bkfftlvlh2 = std::make_unique_for_overwrite<
+            bkfftlvlh2 = std::make_unique<
                 BootstrappingKeyFFT<lvlh2param>>();
             for (int i = 0; i < lvlh2param::domainP::n; i++)
                 (*bkfftlvlh2)[i][0] =
@@ -511,25 +502,25 @@ struct EvalKey {
     void emplacebk2bkntt()
     {
         if constexpr (std::is_same_v<P, lvl01param>) {
-            bknttlvl01 = std::make_unique_for_overwrite<
+            bknttlvl01 = std::make_unique<
                 BootstrappingKeyNTT<lvl01param>>();
             for (int i = 0; i < lvl01param::domainP::n; i++)
                 (*bknttlvl01)[i] = ApplyNTT2trgsw<lvl1param>((*bklvl01)[i][0]);
         }
         else if constexpr (std::is_same_v<P, lvlh1param>) {
-            bknttlvlh1 = std::make_unique_for_overwrite<
+            bknttlvlh1 = std::make_unique<
                 BootstrappingKeyNTT<lvlh1param>>();
             for (int i = 0; i < lvlh1param::domainP::n; i++)
                 (*bknttlvlh1)[i] = ApplyNTT2trgsw<lvl1param>((*bklvlh1)[i][0]);
         }
         else if constexpr (std::is_same_v<P, lvl02param>) {
-            bknttlvl02 = std::make_unique_for_overwrite<
+            bknttlvl02 = std::make_unique<
                 BootstrappingKeyNTT<lvl02param>>();
             for (int i = 0; i < lvl02param::domainP::n; i++)
                 (*bknttlvl02)[i] = ApplyNTT2trgsw<lvl2param>((*bklvl02)[i][0]);
         }
         else if constexpr (std::is_same_v<P, lvlh2param>) {
-            bknttlvlh2 = std::make_unique_for_overwrite<
+            bknttlvlh2 = std::make_unique<
                 BootstrappingKeyNTT<lvlh2param>>();
             for (int i = 0; i < lvlh2param::domainP::n; i++)
                 (*bknttlvlh2)[i] = ApplyNTT2trgsw<lvl2param>((*bklvlh2)[i][0]);
@@ -555,11 +546,11 @@ struct EvalKey {
                 new (std::align_val_t(64)) KeySwitchingKey<lvl20param>());
             ikskgen<lvl20param>(*iksklvl20, sk);
         }
-        else if constexpr (std::is_same_v<P, lvl2hparam>) {
-            iksklvl2h =
-                std::make_unique_for_overwrite<KeySwitchingKey<lvl2hparam>>();
-            ikskgen<lvl2hparam>(*iksklvl2h, sk);
-        }
+        // else if constexpr (std::is_same_v<P, lvl2hparam>) {
+        //     iksklvlh2 =
+        //         std::make_unique<KeySwitchingKey<lvlh2param>>();
+        //     ikskgen<lvlh2param>(*iksklvlh2, sk);
+        // }
         else if constexpr (std::is_same_v<P, lvl21param>) {
             iksklvl21 = std::unique_ptr<KeySwitchingKey<lvl21param>>(
                 new (std::align_val_t(64)) KeySwitchingKey<lvl21param>());
@@ -582,7 +573,7 @@ struct EvalKey {
     void emplacesubiksk(const SecretKey& sk)
     {
         if constexpr (std::is_same_v<P, lvl21param>) {
-            subiksklvl21 = std::make_unique_for_overwrite<
+            subiksklvl21 = std::make_unique<
                 SubsetKeySwitchingKey<lvl21param>>();
             subikskgen<lvl21param>(*subiksklvl21, sk);
         }
@@ -622,7 +613,7 @@ struct EvalKey {
                            const SecretKey& sk)
     {
         if constexpr (std::is_same_v<P, lvl21param>) {
-            subprivksklvl21[key] = std::make_unique_for_overwrite<
+            subprivksklvl21[key] = std::make_unique<
                 SubsetPrivateKeySwitchingKey<lvl21param>>();
             subprivkskgen<lvl21param>(*subprivksklvl21[key], func, sk);
         }
@@ -724,9 +715,9 @@ struct EvalKey {
         else if constexpr (std::is_same_v<P, lvl20param>) {
             return *iksklvl20;
         }
-        else if constexpr (std::is_same_v<P, lvl2hparam>) {
-            return *iksklvl2h;
-        }
+        // else if constexpr (std::is_same_v<P, lvl2hparam>) {
+        //     return *iksklvl2h;
+        // }
         else if constexpr (std::is_same_v<P, lvl21param>) {
             return *iksklvl21;
         }

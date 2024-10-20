@@ -12,12 +12,12 @@ struct lvl0param {
     static constexpr std::uint32_t k = 1;
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = 0.000'092'511'997'467'675'6;  // fresh noise
+    static const inline double alpha = 0.000'092'511'997'467'675'6;  // fresh noise  0.0000925119974676756
     using T = uint16_t;  // Torus representation
-    static constexpr std::make_signed_t<T> μ =
+    static constexpr std::make_signed_t<T> mu =
         1LL << (std::numeric_limits<T>::digits - 3);
     static constexpr uint32_t plain_modulus = 8;
-    static constexpr double Δ =
+    static constexpr double delta =
         static_cast<double>(1ULL << std::numeric_limits<T>::digits) /
         plain_modulus;
 };
@@ -30,11 +30,11 @@ struct lvlhalfparam {
     static constexpr std::uint32_t k = 1;
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = std::pow(2.0, -17);  // fresh noise
+    static const inline double alpha = std::pow(2.0, -17);  // fresh noise
     using T = uint32_t;                                 // Torus representation
-    static constexpr T μ = 1U << (std::numeric_limits<T>::digits - 3);
+    static constexpr T mu = 1U << (std::numeric_limits<T>::digits - 3); // mu = 1U << 29 if T is uint32_t;.
     static constexpr uint32_t plain_modulus = 8;
-    static constexpr double Δ =
+    static constexpr double delta =
         static_cast<double>(1ULL << std::numeric_limits<T>::digits) /
         plain_modulus;
 };
@@ -45,18 +45,19 @@ struct lvl1param {
     static constexpr std::uint32_t nbit =
         10;  // dimension must be a power of 2 for ease of polynomial
              // multiplication.
-    static constexpr std::uint32_t n = 1 << nbit;  // dimension
+    static constexpr std::uint32_t n = 1 << nbit;  // dimension: 1024
     static constexpr std::uint32_t k = 1;
     static constexpr std::uint32_t l = 3;
     static constexpr std::uint32_t Bgbit = 6;
     static constexpr std::uint32_t Bg = 1 << Bgbit;
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = std::pow(2.0, -25);  // fresh noise
+    static const inline double alpha = std::pow(2.0, -25);  // Gaussian fresh noise 2^{-25}, stdev
     using T = uint32_t;                                 // Torus representation
-    static constexpr std::make_signed_t<T> μ = 1 << 29;
-    static constexpr uint32_t plain_modulus = 8;
-    static constexpr double Δ =
+                                                          // mu is value for message if message is = 1
+    static constexpr std::make_signed_t<T> mu = 1 << 29; // 536870912 (0x2000000) for 1
+    static constexpr uint32_t plain_modulus = 8;  // MSB 3 bits are for message 001_ (0x2) or 111_ (0xE)
+    static constexpr double delta =
         static_cast<double>(1ULL << std::numeric_limits<T>::digits) /
         plain_modulus;
 };
@@ -73,11 +74,11 @@ struct lvl2param {
     static constexpr std::uint32_t Bg = 1 << Bgbit;
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = std::pow(2.0, -47);  // fresh noise
+    static const inline double alpha = std::pow(2.0, -47);  // fresh noise
     using T = uint64_t;                                 // Torus representation
-    static constexpr std::make_signed_t<T> μ = 1LL << 61;
+    static constexpr std::make_signed_t<T> mu = 1LL << 61;
     static constexpr uint32_t plain_modulus = 8;
-    static constexpr double Δ =
+    static constexpr double delta =
         static_cast<double>(1ULL << (std::numeric_limits<T>::digits - 4));
 };
 
@@ -93,12 +94,12 @@ struct lvl3param {
     static constexpr std::uint32_t Bg = 1 << Bgbit;
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = std::pow(2.0, -47);  // fresh noise
+    static const inline double alpha = std::pow(2.0, -47);  // fresh noise
     using T = uint64_t;                                 // Torus representation
-    static constexpr T μ = 1ULL << 61;
+    static constexpr T mu = 1ULL << 61;
     static constexpr uint32_t plain_modulusbit = 31;
     static constexpr uint64_t plain_modulus = 1ULL << plain_modulusbit;
-    static constexpr double Δ = 1ULL << (64 - plain_modulusbit - 1);
+    static constexpr double delta = 1ULL << (64 - plain_modulusbit - 1);
 };
 
 // Key Switching parameters
@@ -108,7 +109,7 @@ struct lvl10param {
         2;  // how many bit should be encrypted in keyswitching key
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = lvl0param::α;  // key noise
+    static const inline double alpha = lvl0param::alpha;  // key noise
     using domainP = lvl1param;
     using targetP = lvl0param;
 };
@@ -118,7 +119,7 @@ struct lvl1hparam {
         10;  // number of addition in keyswitching
     static constexpr std::uint32_t basebit =
         3;  // how many bit should be encrypted in keyswitching key
-    static const inline double α = lvlhalfparam::α;  // key noise
+    static const inline double alpha = lvlhalfparam::alpha;  // key noise
     using domainP = lvl1param;
     using targetP = lvlhalfparam;
 };
@@ -129,7 +130,7 @@ struct lvl11param {
         4;  // how many bit should be encrypted in keyswitching key
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = lvl1param::α;  // key noise
+    static const inline double alpha = lvl1param::alpha;  // key noise
     using domainP = lvl1param;
     using targetP = lvl1param;
 };
@@ -140,20 +141,9 @@ struct lvl20param {
         2;  // how many bit should be encrypted in keyswitching key
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = lvl0param::α;  // key noise
+    static const inline double alpha = lvl0param::alpha;  // key noise
     using domainP = lvl2param;
     using targetP = lvl0param;
-};
-
-struct lvl2hparam {
-    static constexpr std::uint32_t t = 7;  // number of addition in keyswitching
-    static constexpr std::uint32_t basebit =
-        2;  // how many bit should be encrypted in keyswitching key
-    static constexpr ErrorDistribution errordist =
-        ErrorDistribution::ModularGaussian;
-    static const inline double α = lvlhalfparam::α;  // key noise
-    using domainP = lvl2param;
-    using targetP = lvlhalfparam;
 };
 
 struct lvl21param {
@@ -163,7 +153,7 @@ struct lvl21param {
         3;  // how many bit should be encrypted in keyswitching key
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = lvl1param::α;  // key noise
+    static const inline double alpha = lvl1param::alpha;  // key noise
     using domainP = lvl2param;
     using targetP = lvl1param;
 };
@@ -175,7 +165,7 @@ struct lvl22param {
         1;  // how many bit should be encrypted in keyswitching key
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double α = lvl2param::α;  // key noise
+    static const inline double alpha = lvl2param::alpha;  // key noise
     using domainP = lvl2param;
     using targetP = lvl2param;
 };
@@ -184,7 +174,7 @@ struct lvl31param {
     static constexpr std::uint32_t t = 7;  // number of addition in keyswitching
     static constexpr std::uint32_t basebit =
         2;  // how many bit should be encrypted in keyswitching key
-    static const inline double α = lvl1param::α;  // key noise
+    static const inline double alpha = lvl1param::alpha;  // key noise
     using domainP = lvl3param;
     using targetP = lvl1param;
 };

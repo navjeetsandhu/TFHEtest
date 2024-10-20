@@ -23,13 +23,13 @@ void BlindRotate(TRLWE<typename P::targetP> &res,
                  const Polynomial<typename P::targetP> &testvector)
 {
     constexpr uint32_t bitwidth = bits_needed<num_out - 1>();
-    const uint32_t b̄ = 2 * P::targetP::n -
+    const uint32_t bLong = 2 * P::targetP::n -
                        ((tlwe[P::domainP::k * P::domainP::n] >>
                          (std::numeric_limits<typename P::domainP::T>::digits -
                           1 - P::targetP::nbit + bitwidth))
                         << bitwidth);
     res = {};
-    PolynomialMulByXai<typename P::targetP>(res[P::targetP::k], testvector, b̄);
+    PolynomialMulByXai<typename P::targetP>(res[P::targetP::k], testvector, bLong);
 #ifdef USE_KEY_BUNDLE
     alignas(64) std::array<TRGSWFFT<typename P::targetP>,
                            P::domainP::k * P::domainP::n / P::Addends>
@@ -58,14 +58,14 @@ void BlindRotate(TRLWE<typename P::targetP> &res,
         constexpr typename P::domainP::T roundoffset =
             1ULL << (std::numeric_limits<typename P::domainP::T>::digits - 2 -
                      P::targetP::nbit + bitwidth);
-        const uint32_t ā =
+        const uint32_t aLong =
             (tlwe[i] + roundoffset) >>
             (std::numeric_limits<typename P::domainP::T>::digits - 1 -
              P::targetP::nbit + bitwidth)
                 << bitwidth;
-        if (ā == 0) continue;
+        if (aLong == 0) continue;
         // Do not use CMUXFFT to avoid unnecessary copy.
-        CMUXFFTwithPolynomialMulByXaiMinusOne<P>(res, bkfft[i], ā);
+        CMUXFFTwithPolynomialMulByXaiMinusOne<P>(res, bkfft[i], aLong);
     }
 #endif
 }
@@ -77,13 +77,13 @@ void BlindRotate(TRLWE<typename P::targetP> &res,
                  const TRLWE<typename P::targetP> &testvector)
 {
     constexpr uint32_t bitwidth = bits_needed<num_out - 1>();
-    const uint32_t b̄ = 2 * P::targetP::n -
+    const uint32_t bLong = 2 * P::targetP::n -
                        ((tlwe[P::domainP::k * P::domainP::n] >>
                          (std::numeric_limits<typename P::domainP::T>::digits -
                           1 - P::targetP::nbit + bitwidth))
                         << bitwidth);
     for (int k = 0; k < P::targetP::k + 1; k++)
-        PolynomialMulByXai<typename P::targetP>(res[k], testvector[k], b̄);
+        PolynomialMulByXai<typename P::targetP>(res[k], testvector[k], bLong);
 #ifdef USE_KEY_BUNDLE
     alignas(64) std::array<TRGSWFFT<typename P::targetP>,
                            P::domainP::k * P::domainP::n / P::Addends>
@@ -112,15 +112,15 @@ void BlindRotate(TRLWE<typename P::targetP> &res,
         constexpr typename P::domainP::T roundoffset =
             1ULL << (std::numeric_limits<typename P::domainP::T>::digits - 2 -
                      P::targetP::nbit + bitwidth);
-        const uint32_t ā =
+        const uint32_t aLong =
             (tlwe[i] + roundoffset) >>
             (std::numeric_limits<typename P::domainP::T>::digits - 1 -
              P::targetP::nbit + bitwidth)
                 << bitwidth;
-        if (ā == 0) continue;
+        if (aLong == 0) continue;
         // Do not use CMUXFFT to avoid unnecessary copy.
         CMUXFFTwithPolynomialMulByXaiMinusOne<typename P::targetP>(res,
-                                                                   bkfft[i], ā);
+                                                                   bkfft[i], aLong);
     }
 #endif
 }
@@ -132,26 +132,26 @@ void BlindRotate(TRLWE<typename P::targetP> &res,
                  const Polynomial<typename P::targetP> &testvector)
 {
     constexpr uint32_t bitwidth = bits_needed<num_out - 1>();
-    const uint32_t b̄ = 2 * P::targetP::n -
+    const uint32_t bLong = 2 * P::targetP::n -
                        ((tlwe[P::domainP::k * P::domainP::n] >>
                          (std::numeric_limits<typename P::domainP::T>::digits -
                           1 - P::targetP::nbit + bitwidth))
                         << bitwidth);
     res = {};
-    PolynomialMulByXai<typename P::targetP>(res[P::targetP::k], testvector, b̄);
+    PolynomialMulByXai<typename P::targetP>(res[P::targetP::k], testvector, bLong);
     for (int i = 0; i < P::domainP::k * P::domainP::n; i++) {
         constexpr typename P::domainP::T roundoffset =
             1ULL << (std::numeric_limits<typename P::domainP::T>::digits - 2 -
                      P::targetP::nbit + bitwidth);
-        const uint32_t ā =
+        const uint32_t aLong =
             (tlwe[i] + roundoffset) >>
             (std::numeric_limits<typename P::domainP::T>::digits - 1 -
              P::targetP::nbit + bitwidth)
                 << bitwidth;
-        if (ā == 0) continue;
+        if (aLong == 0) continue;
         // Do not use CMUXNTT to avoid unnecessary copy.
         CMUXNTTwithPolynomialMulByXaiMinusOne<typename P::targetP>(res,
-                                                                   bkntt[i], ā);
+                                                                   bkntt[i], aLong);
     }
 }
 
@@ -162,26 +162,26 @@ void BlindRotate(TRLWE<typename P::targetP> &res,
                  const Polynomial<typename P::targetP> &testvector)
 {
     constexpr uint32_t bitwidth = bits_needed<num_out - 1>();
-    const uint32_t b̄ = 2 * P::targetP::n -
+    const uint32_t bLong = 2 * P::targetP::n -
                        ((tlwe[P::domainP::k * P::domainP::n] >>
                          (std::numeric_limits<typename P::domainP::T>::digits -
                           1 - P::targetP::nbit + bitwidth))
                         << bitwidth);
     res = {};
-    PolynomialMulByXai<typename P::targetP>(res[P::targetP::k], testvector, b̄);
+    PolynomialMulByXai<typename P::targetP>(res[P::targetP::k], testvector, bLong);
     for (int i = 0; i < P::domainP::k * P::domainP::n; i++) {
         constexpr typename P::domainP::T roundoffset =
             1ULL << (std::numeric_limits<typename P::domainP::T>::digits - 2 -
                      P::targetP::nbit + bitwidth);
-        const uint32_t ā =
+        const uint32_t aLong =
             (tlwe[i] + roundoffset) >>
             (std::numeric_limits<typename P::domainP::T>::digits - 1 -
              P::targetP::nbit + bitwidth)
                 << bitwidth;
-        if (ā == 0) continue;
+        if (aLong == 0) continue;
         // Do not use CMUXNTT to avoid unnecessary copy.
         CMUXRAINTTwithPolynomialMulByXaiMinusOne<typename P::targetP>(
-            res, bkraintt[i], ā);
+            res, bkraintt[i], aLong);
     }
 }
 
@@ -230,26 +230,26 @@ void GateBootstrappingManyLUT(
         SampleExtractIndex<typename P::targetP>(res[i], acc, i);
 }
 
-template <class P, typename P::T μ>
-constexpr Polynomial<P> μpolygen()
+template <class P, typename P::T mu>
+constexpr Polynomial<P> mupolygen()
 {
     Polynomial<P> poly;
-    for (typename P::T &p : poly) p = μ;
+    for (typename P::T &p : poly) p = mu;
     return poly;
 }
 
-template <class bkP, typename bkP::targetP::T μ, class iksP>
+template <class bkP, typename bkP::targetP::T mu, class iksP>
 void GateBootstrapping(TLWE<typename bkP::domainP> &res,
                        const TLWE<typename bkP::domainP> &tlwe,
                        const EvalKey &ek)
 {
     alignas(64) TLWE<typename bkP::targetP> tlwelvl1;
     GateBootstrappingTLWE2TLWEFFT<bkP>(tlwelvl1, tlwe, ek.getbkfft<bkP>(),
-                                       μpolygen<typename bkP::targetP, μ>());
+                                       mupolygen<typename bkP::targetP, mu>());
     IdentityKeySwitch<iksP>(res, tlwelvl1, ek.getiksk<iksP>());
 }
 
-template <class iksP, class bkP, typename bkP::targetP::T μ>
+template <class iksP, class bkP, typename bkP::targetP::T mu>
 void GateBootstrapping(TLWE<typename iksP::domainP> &res,
                        const TLWE<typename iksP::domainP> &tlwe,
                        const EvalKey &ek)
@@ -257,29 +257,29 @@ void GateBootstrapping(TLWE<typename iksP::domainP> &res,
     alignas(64) TLWE<typename iksP::targetP> tlwelvl0;
     IdentityKeySwitch<iksP>(tlwelvl0, tlwe, ek.getiksk<iksP>());
     GateBootstrappingTLWE2TLWEFFT<bkP>(res, tlwelvl0, ek.getbkfft<bkP>(),
-                                       μpolygen<typename bkP::targetP, μ>());
+                                       mupolygen<typename bkP::targetP, mu>());
 }
 
-template <class bkP, typename bkP::targetP::T μ, class iksP>
-void GateBootstrappingNTT(TLWE<typename iksP::tagetP> &res,
-                          const TLWE<typename bkP::domainP> &tlwe,
-                          const EvalKey &ek)
+template <class bkP, typename bkP::targetP::T mu, class iksP>
+void GateBootstrappingNTT(TLWE<typename bkP::domainP> &res,
+                           const TLWE<typename bkP::domainP> &tlwe,
+                           const EvalKey &ek)
 {
     alignas(64) TLWE<typename bkP::targetP> tlwelvl1;
     GateBootstrappingTLWE2TLWENTT<bkP>(tlwelvl1, tlwe, ek.getbkntt<bkP>(),
-                                       μpolygen<typename bkP::targetP, μ>());
+                                       mupolygen<typename bkP::targetP, mu>());
     IdentityKeySwitch<iksP>(res, tlwelvl1, ek.getiksk<iksP>());
 }
 
-template <class iksP, class bkP, typename bkP::targetP::T μ>
-void GateBootstrappingNTT(TLWE<typename bkP::targetP> &res,
-                          const TLWE<typename iksP::domainP> &tlwe,
-                          const EvalKey &ek)
+template <class iksP, class bkP, typename bkP::targetP::T mu>
+void GateBootstrappingNTT(TLWE<typename iksP::domainP> &res,
+                           const TLWE<typename iksP::domainP> &tlwe,
+                           const EvalKey &ek)
 {
     alignas(64) TLWE<typename iksP::targetP> tlwelvl0;
     IdentityKeySwitch<iksP>(tlwelvl0, tlwe, ek.getiksk<iksP>());
     GateBootstrappingTLWE2TLWENTT<bkP>(res, tlwelvl0, ek.getbkntt<bkP>(),
-                                       μpolygen<typename bkP::targetP, μ>());
+                                       mupolygen<typename bkP::targetP, mu>());
 }
 
 }  // namespace TFHEpp

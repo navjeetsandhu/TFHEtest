@@ -17,7 +17,7 @@ inline Polynomial<P> decryptTRLWE3(const TRLWE3<P> &c, const Key<P> &key)
     for (int i = 0; i < P::n; i++) phase[i] += mulres[i];
 
     for (int i = 0; i < P::n; i++)
-        p[i] = static_cast<typename P::T>(std::round(phase[i] / P::Δ)) %
+        p[i] = static_cast<typename P::T>(std::round(phase[i] / P::delta)) %
                P::plain_modulus;
     return p;
 }
@@ -76,7 +76,7 @@ int main()
         for (int i = 0; i < P::n; i++) ptrue[i] %= P::plain_modulus;
 
         // for (int i = 0; i < P::n; i++)
-        // std::cout<<pres[i]<<":"<<ptrue[i]<<std::endl;
+        //     std::cout<<pres[i]<<":"<<ptrue[i]<<std::endl;
         for (int i = 0; i < P::n; i++) assert(pres[i] == ptrue[i]);
     }
     std::cout << "Passed" << std::endl;

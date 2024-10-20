@@ -74,10 +74,12 @@ template <class P>
 using Key = std::array<typename P::T, P::k * P::n>;
 
 template <class P>
-using TLWE = aligned_array<typename P::T, P::k * P::n + 1>;
+using TLWE = std::array<typename P::T, P::k * P::n + 1>;
 
 template <class P>
 using Polynomial = std::array<typename P::T, P::n>;
+template <class P>
+using UnsignedPolynomial = Polynomial<P>;
 template <class P>
 using PolynomialInFD = std::array<double, P::n>;
 template <class P>
@@ -94,6 +96,8 @@ using DecomposedPolynomialRAINTT = std::array<PolynomialRAINTT<P>, P::l>;
 template <class P>
 using TRLWE = std::array<Polynomial<P>, P::k + 1>;
 template <class P>
+using UnsignedTRLWE = std::array<Polynomial<P>, P::k + 1>;
+template <class P>
 using TRLWE3 = std::array<Polynomial<P>, 3>;
 template <class P>
 using TRLWEInFD = std::array<PolynomialInFD<P>, P::k + 1>;
@@ -105,11 +109,7 @@ using TRLWERAINTT = std::array<PolynomialRAINTT<P>, P::k + 1>;
 template <class P>
 using TRGSW = std::array<TRLWE<P>, (P::k + 1) * P::l>;
 template <class P>
-using HalfTRGSW = std::array<TRLWE<P>, P::l>;
-template <class P>
 using TRGSWFFT = aligned_array<TRLWEInFD<P>, (P::k + 1) * P::l>;
-template <class P>
-using HalfTRGSWFFT = aligned_array<TRLWEInFD<P>, P::l>;
 template <class P>
 using TRGSWNTT = std::array<TRLWENTT<P>, (P::k + 1) * P::l>;
 template <class P>
@@ -147,7 +147,7 @@ using BootstrappingKeyRAINTT =
 
 template <class P>
 using KeySwitchingKey = std::array<
-    std::array<std::array<TLWE<typename P::targetP>, (1 << (P::basebit - 1))>,
+    std::array<std::array<TLWE<typename P::targetP>, (1 << P::basebit) - 1>,
                P::t>,
     P::domainP::k * P::domainP::n>;
 template <class P>
@@ -161,12 +161,10 @@ using TLWE2TRLWEIKSKey = std::array<
                P::t>,
     P::domainP::n>;
 template <class P>
-using EvalAutoKey = std::array<HalfTRGSWFFT<P>, P::k>;
-template <class P>
-using AnnihilateKey = std::array<EvalAutoKey<P>, P::nbit>;
+using AnnihilateKey = std::array<TRGSWFFT<P>, P::nbit>;
 template <class P>
 using PrivateKeySwitchingKey = std::array<
-    std::array<std::array<TRLWE<typename P::targetP>, (1 << (P::basebit - 1))>,
+    std::array<std::array<TRLWE<typename P::targetP>, (1 << P::basebit) - 1>,
                P::t>,
     P::domainP::k * P::domainP::n + 1>;
 template <class P>
@@ -195,7 +193,6 @@ using relinKeyFFT = std::array<TRLWEInFD<P>, P::l>;
     fun(lvl10param);                                          \
     fun(lvl1hparam);                                          \
     fun(lvl20param);                                          \
-    fun(lvl2hparam);                                          \
     fun(lvl21param);
 #define TFHEPP_EXPLICIT_INSTANTIATION_KEY_SWITCH_TO_TRLWE(fun) \
     fun(lvl11param);                                           \
@@ -206,9 +203,9 @@ using relinKeyFFT = std::array<TRLWEInFD<P>, P::l>;
 #define TFHEPP_EXPLICIT_INSTANTIATION_SUBSET_KEY_SWITCH_TO_TRLWE(fun) \
     fun(lvl21param);
 #define TFHEPP_EXPLICIT_INSTANTIATION_GATE_IKSBR(fun) \
-    fun(lvl10param, lvl01param, lvl1param::μ);
+    fun(lvl10param, lvl01param, lvl1param::mu);
 #define TFHEPP_EXPLICIT_INSTANTIATION_GATE_BRIKS(fun) \
-    fun(lvl01param, lvl1param::μ, lvl10param);
+    fun(lvl01param, lvl1param::mu, lvl10param);
 #define TFHEPP_EXPLICIT_INSTANTIATION_GATE(fun) \
     fun(lvl10param, lvl01param);                \
     fun(lvl10param, lvl02param);                \

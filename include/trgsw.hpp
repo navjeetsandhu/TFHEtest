@@ -131,27 +131,6 @@ void trgswfftExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
 }
 
 template <class P>
-void halftrgswfftExternalProduct(TRLWE<P> &res, const Polynomial<P> &poly,
-                             const HalfTRGSWFFT<P> &halftrgswfft)
-{
-    alignas(64) DecomposedPolynomial<P> decpoly;
-    Decomposition<P>(decpoly, poly);
-    alignas(64) PolynomialInFD<P> decpolyfft;
-    // __builtin_prefetch(trgswfft[0].data());
-    TwistIFFT<P>(decpolyfft, decpoly[0]);
-    alignas(64) TRLWEInFD<P> restrlwefft;
-    for (int m = 0; m < P::k + 1; m++)
-        MulInFD<P::n>(restrlwefft[m], decpolyfft, halftrgswfft[0][m]);
-    for (int i = 1; i < P::l; i++) {
-        // __builtin_prefetch(trgswfft[i].data());
-        TwistIFFT<P>(decpolyfft, decpoly[i]);
-        for (int m = 0; m < P::k + 1; m++)
-            FMAInFD<P::n>(restrlwefft[m], decpolyfft, halftrgswfft[i][m]);
-    }
-    for (int k = 0; k < P::k + 1; k++) TwistFFT<P>(res[k], restrlwefft[k]);
-}
-
-template <class P>
 void trgswrainttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
                                 const TRGSWRAINTT<P> &trgswntt)
 {
@@ -253,7 +232,7 @@ template <class P>
 constexpr std::array<typename P::T, P::l> hgen()
 {
     std::array<typename P::T, P::l> h{};
-    if constexpr (hasq<P>)
+    if constexpr (hasq<P>::value)
         for (int i = 0; i < P::l; i++)
             h[i] = (P::q + (1ULL << ((i + 1) * P::Bgbit - 1))) >>
                    ((i + 1) * P::Bgbit);
@@ -272,16 +251,6 @@ TRGSWFFT<P> ApplyFFT2trgsw(const TRGSW<P> &trgsw)
         for (int j = 0; j < (P::k + 1); j++)
             TwistIFFT<P>(trgswfft[i][j], trgsw[i][j]);
     return trgswfft;
-}
-
-template <class P>
-HalfTRGSWFFT<P> ApplyFFT2halftrgsw(const HalfTRGSW<P> &trgsw)
-{
-    alignas(64) HalfTRGSWFFT<P> halftrgswfft;
-    for (int i = 0; i < P::l; i++)
-        for (int j = 0; j < (P::k + 1); j++)
-            TwistIFFT<P>(halftrgswfft[i][j], trgsw[i][j]);
-    return halftrgswfft;
 }
 
 template <class P>
@@ -330,13 +299,13 @@ TRGSWNTT<P> TRGSW2NTT(const TRGSW<P> &trgsw)
 }
 
 template <class P>
-TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const double α,
+TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const double alpha,
                          const Key<P> &key)
 {
     constexpr std::array<typename P::T, P::l> h = hgen<P>();
 
     TRGSW<P> trgsw;
-    for (TRLWE<P> &trlwe : trgsw) trlwe = trlweSymEncryptZero<P>(α, key);
+    for (TRLWE<P> &trlwe : trgsw) trlwe = trlweSymEncryptZero<P>(alpha, key);
     for (int i = 0; i < P::l; i++) {
         for (int k = 0; k < P::k + 1; k++) {
             for (int j = 0; j < P::n; j++) {
@@ -349,13 +318,13 @@ TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const double α,
 }
 
 template <class P>
-TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const uint η,
+TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const uint eta,
                          const Key<P> &key)
 {
     constexpr std::array<typename P::T, P::l> h = hgen<P>();
 
     TRGSW<P> trgsw;
-    for (TRLWE<P> &trlwe : trgsw) trlwe = trlweSymEncryptZero<P>(η, key);
+    for (TRLWE<P> &trlwe : trgsw) trlwe = trlweSymEncryptZero<P>(eta, key);
     for (int i = 0; i < P::l; i++) {
         for (int k = 0; k < P::k + 1; k++) {
             for (int j = 0; j < P::n; j++) {
@@ -371,63 +340,24 @@ template <class P>
 TRGSW<P> trgswSymEncrypt(const Polynomial<P> &p, const Key<P> &key)
 {
     if constexpr (P::errordist == ErrorDistribution::ModularGaussian)
-        return trgswSymEncrypt<P>(p, P::α, key);
+        return trgswSymEncrypt<P>(p, P::alpha, key);
     else
-        return trgswSymEncrypt<P>(p, P::η, key);
+        return trgswSymEncrypt<P>(p, P::eta, key);
 }
 
 template <class P>
-HalfTRGSW<P> halftrgswSymEncrypt(const Polynomial<P> &p, const double α,
-                         const Key<P> &key)
-{
-    constexpr std::array<typename P::T, P::l> h = hgen<P>();
-
-    HalfTRGSW<P> halftrgsw;
-    for (TRLWE<P> &trlwe : halftrgsw) trlwe = trlweSymEncryptZero<P>(α, key);
-    for (int i = 0; i < P::l; i++)
-        for (int j = 0; j < P::n; j++)
-            halftrgsw[i][P::k][j] +=
-                static_cast<typename P::T>(p[j]) * h[i];
-    return halftrgsw;
-}
-
-template <class P>
-HalfTRGSW<P> halftrgswSymEncrypt(const Polynomial<P> &p,  const uint η,
-                         const Key<P> &key)
-{
-    constexpr std::array<typename P::T, P::l> h = hgen<P>();
-
-    HalfTRGSW<P> halftrgsw;
-    for (TRLWE<P> &trlwe : halftrgsw) trlwe = trlweSymEncryptZero<P>(η, key);
-    for (int i = 0; i < P::l; i++)
-        for (int j = 0; j < P::n; j++)
-            halftrgsw[i][P::k][j] +=
-                static_cast<typename P::T>(p[j]) * h[i];
-    return halftrgsw;
-}
-
-template <class P>
-HalfTRGSW<P> halftrgswSymEncrypt(const Polynomial<P> &p, const Key<P> &key)
-{
-    if constexpr (P::errordist == ErrorDistribution::ModularGaussian)
-        return halftrgswSymEncrypt<P>(p, P::α, key);
-    else
-        return halftrgswSymEncrypt<P>(p, P::η, key);
-}
-
-template <class P>
-TRGSWFFT<P> trgswfftSymEncrypt(const Polynomial<P> &p, const double α,
+TRGSWFFT<P> trgswfftSymEncrypt(const Polynomial<P> &p, const double alpha,
                                const Key<P> &key)
 {
-    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, α, key);
+    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, alpha, key);
     return ApplyFFT2trgsw<P>(trgsw);
 }
 
 template <class P>
-TRGSWFFT<P> trgswfftSymEncrypt(const Polynomial<P> &p, const uint η,
+TRGSWFFT<P> trgswfftSymEncrypt(const Polynomial<P> &p, const uint eta,
                                const Key<P> &key)
 {
-    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, η, key);
+    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, eta, key);
     return ApplyFFT2trgsw<P>(trgsw);
 }
 
@@ -435,49 +365,24 @@ template <class P>
 TRGSWFFT<P> trgswfftSymEncrypt(const Polynomial<P> &p, const Key<P> &key)
 {
     if constexpr (P::errordist == ErrorDistribution::ModularGaussian)
-        return trgswfftSymEncrypt<P>(p, P::α, key);
+        return trgswfftSymEncrypt<P>(p, P::alpha, key);
     else
-        return trgswfftSymEncrypt<P>(p, P::η, key);
+        return trgswfftSymEncrypt<P>(p, P::eta, key);
 }
 
 template <class P>
-HalfTRGSWFFT<P> halftrgswfftSymEncrypt(const Polynomial<P> &p, const double α,
+TRGSWNTT<P> trgswnttSymEncrypt(const Polynomial<P> &p, const double alpha,
                                const Key<P> &key)
 {
-    HalfTRGSW<P> halftrgsw = halftrgswSymEncrypt<P>(p, α, key);
-    return ApplyFFT2halftrgsw<P>(halftrgsw);
-}
-
-template <class P>
-HalfTRGSWFFT<P> halftrgswfftSymEncrypt(const Polynomial<P> &p, const uint η,
-                               const Key<P> &key)
-{
-    HalfTRGSW<P> halftrgsw = halftrgswSymEncrypt<P>(p, η, key);
-    return ApplyFFT2halftrgsw<P>(halftrgsw);
-}
-
-template <class P>
-HalfTRGSWFFT<P> halftrgswfftSymEncrypt(const Polynomial<P> &p, const Key<P> &key)
-{
-    if constexpr (P::errordist == ErrorDistribution::ModularGaussian)
-        return halftrgswfftSymEncrypt<P>(p, P::α, key);
-    else
-        return halftrgswfftSymEncrypt<P>(p, P::η, key);
-}
-
-template <class P>
-TRGSWNTT<P> trgswnttSymEncrypt(const Polynomial<P> &p, const double α,
-                               const Key<P> &key)
-{
-    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, α, key);
+    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, alpha, key);
     return ApplyNTT2trgsw<P>(trgsw);
 }
 
 template <class P>
-TRGSWNTT<P> trgswnttSymEncrypt(const Polynomial<P> &p, const uint η,
+TRGSWNTT<P> trgswnttSymEncrypt(const Polynomial<P> &p, const uint eta,
                                const Key<P> &key)
 {
-    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, η, key);
+    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, eta, key);
     return ApplyNTT2trgsw<P>(trgsw);
 }
 
@@ -485,29 +390,29 @@ template <class P>
 TRGSWNTT<P> trgswnttSymEncrypt(const Polynomial<P> &p, const Key<P> &key)
 {
     if constexpr (P::errordist == ErrorDistribution::ModularGaussian)
-        return trgswnttSymEncrypt<P>(p, P::α, key);
+        return trgswnttSymEncrypt<P>(p, P::alpha, key);
     else
-        return trgswnttSymEncrypt<P>(p, P::η, key);
+        return trgswnttSymEncrypt<P>(p, P::eta, key);
 }
 
 template <class P>
-TRGSWRAINTT<P> trgswrainttSymEncrypt(const Polynomial<P> &p, const double α,
+TRGSWRAINTT<P> trgswrainttSymEncrypt(const Polynomial<P> &p, const double alpha,
                                      const Key<P> &key)
 {
-    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, α, key);
+    TRGSW<P> trgsw = trgswSymEncrypt<P>(p, alpha, key);
     return ApplyRAINTT2trgsw<P>(trgsw);
 }
 
 template <class P>
-TRGSWRAINTT<P> trgswrainttSymEncrypt(const Polynomial<P> &p, const uint η,
+TRGSWRAINTT<P> trgswrainttSymEncrypt(const Polynomial<P> &p, const uint eta,
                                      const Key<P> &key)
 {
-    if constexpr (hasq<P> && P::q == raintt::P) {
+    if constexpr (hasq<P>::value && P::q == raintt::P) {
         constexpr uint8_t remainder = ((P::nbit - 1) % 3) + 1;
         constexpr std::array<typename P::T, P::l> h = hgen<P>();
         TRGSWRAINTT<P> trgswraintt;
         for (TRLWERAINTT<P> &trlweraintt : trgswraintt) {
-            trlweraintt = trlwerainttSymEncryptZero<P>(η, key);
+            trlweraintt = trlwerainttSymEncryptZero<P>(eta, key);
             for (int k = 0; k <= P::k; k++)
                 for (int j = 0; j < P::n; j++)
                     trlweraintt[k][j] = raintt::MulSREDC(
@@ -541,7 +446,7 @@ TRGSWRAINTT<P> trgswrainttSymEncrypt(const Polynomial<P> &p, const uint η,
         return trgswraintt;
     }
     else {
-        TRGSW<P> trgsw = trgswSymEncrypt<P>(p, η, key);
+        TRGSW<P> trgsw = trgswSymEncrypt<P>(p, eta, key);
         return ApplyRAINTT2trgsw<P>(trgsw);
     }
 }
@@ -550,9 +455,9 @@ template <class P>
 TRGSWRAINTT<P> trgswrainttSymEncrypt(const Polynomial<P> &p, const Key<P> &key)
 {
     if constexpr (P::errordist == ErrorDistribution::ModularGaussian)
-        return trgswrainttSymEncrypt<P>(p, P::α, key);
+        return trgswrainttSymEncrypt<P>(p, P::alpha, key);
     else
-        return trgswrainttSymEncrypt<P>(p, P::η, key);
+        return trgswrainttSymEncrypt<P>(p, P::eta, key);
 }
 
 }  // namespace TFHEpp

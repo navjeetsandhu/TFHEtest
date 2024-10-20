@@ -1,4 +1,4 @@
-#include <cassert>
+#include "my_assert.h"
 #include <iostream>
 #include <random>
 #include <tfhe++.hpp>
@@ -12,7 +12,6 @@ int main()
     random_device seed_gen;
     default_random_engine engine(seed_gen());
     uniform_int_distribution<uint32_t> binary(0, 1);
-
     cout << "test p=1" << endl;
 
     cout << "lvl1" << endl;
@@ -23,7 +22,7 @@ int main()
         for (bool &i : p) i = (binary(engine) > 0);
         Polynomial<lvl1param> pmu;
         for (int i = 0; i < lvl1param::n; i++)
-            pmu[i] = p[i] ? lvl1param::μ : -lvl1param::μ;
+            pmu[i] = p[i] ? lvl1param::mu : -lvl1param::mu;
         TRLWE<lvl1param> c = trlweSymEncrypt<lvl1param>(pmu, key.lvl1);
 
         const Polynomial<TFHEpp::lvl1param> plainpoly = {
@@ -33,10 +32,12 @@ int main()
             trgswfftSymEncrypt<lvl1param>(plainpoly, key.lvl1);
         trgswfftExternalProduct<lvl1param>(c, c, trgswfft);
         array<bool, lvl1param::n> p2 = trlweSymDecrypt<lvl1param>(c, key.lvl1);
-        for (int i = 0; i < lvl1param::n; i++) assert(p[i] == p2[i]);
+        for (int i = 0; i < lvl1param::n; i++) {
+            _assert(p[i] == p2[i]);
+        }
+
     }
     cout << "Passed" << endl;
-
     cout << "lvl2" << endl;
     for (int test = 0; test < num_test; test++) {
         lweKey key;
@@ -45,7 +46,7 @@ int main()
         for (bool &i : p) i = (binary(engine) > 0);
         Polynomial<lvl2param> pmu;
         for (int i = 0; i < lvl2param::n; i++)
-            pmu[i] = p[i] ? lvl2param::μ : -lvl2param::μ;
+            pmu[i] = p[i] ? lvl2param::mu : -lvl2param::mu;
         TRLWE<lvl2param> c = trlweSymEncrypt<lvl2param>(pmu, key.lvl2);
 
         const Polynomial<TFHEpp::lvl2param> plainpoly = {
@@ -55,7 +56,9 @@ int main()
             trgswfftSymEncrypt<lvl2param>(plainpoly, key.lvl2);
         trgswfftExternalProduct<lvl2param>(c, c, trgswfft);
         array<bool, lvl2param::n> p2 = trlweSymDecrypt<lvl2param>(c, key.lvl2);
-        for (int i = 0; i < lvl2param::n; i++) assert(p[i] == p2[i]);
+        for (int i = 0; i < lvl2param::n; i++) {
+            _assert(p[i] == p2[i]);
+        }
     }
     cout << "Passed" << endl;
 
@@ -69,7 +72,7 @@ int main()
         for (bool &i : p) i = binary(engine) > 0;
         array<typename TFHEpp::lvl1param::T, lvl1param::n> pmu;
         for (int i = 0; i < lvl1param::n; i++)
-            pmu[i] = p[i] ? lvl1param::μ : -lvl1param::μ;
+            pmu[i] = p[i] ? lvl1param::mu : -lvl1param::mu;
         TRLWE<lvl1param> c = trlweSymEncrypt<lvl1param>(pmu, key.lvl1);
 
         const Polynomial<TFHEpp::lvl1param> plainpoly = {
@@ -79,10 +82,12 @@ int main()
             trgswfftSymEncrypt<lvl1param>(plainpoly, key.lvl1);
         trgswfftExternalProduct<lvl1param>(c, c, trgswfft);
         array<bool, lvl1param::n> p2 = trlweSymDecrypt<lvl1param>(c, key.lvl1);
-        for (int i = 0; i < lvl1param::n; i++) assert(p[i] == !p2[i]);
+        for (int i = 0; i < lvl1param::n; i++) {
+            _assert(p[i] == !p2[i]);
+        }
+
     }
     cout << "Passed" << endl;
-
     cout << "lvl2" << endl;
     for (int test = 0; test < num_test; test++) {
         lweKey key;
@@ -91,7 +96,7 @@ int main()
         for (bool &i : p) i = binary(engine) > 0;
         Polynomial<lvl2param> pmu;
         for (int i = 0; i < lvl2param::n; i++)
-            pmu[i] = p[i] ? lvl2param::μ : -lvl2param::μ;
+            pmu[i] = p[i] ? lvl2param::mu : -lvl2param::mu;
         TRLWE<lvl2param> c = trlweSymEncrypt<lvl2param>(pmu, key.lvl2);
 
         const Polynomial<TFHEpp::lvl2param> plainpoly = {
@@ -101,7 +106,9 @@ int main()
             trgswfftSymEncrypt<lvl2param>(plainpoly, key.lvl2);
         trgswfftExternalProduct<lvl2param>(c, c, trgswfft);
         array<bool, lvl2param::n> p2 = trlweSymDecrypt<lvl2param>(c, key.lvl2);
-        for (int i = 0; i < lvl2param::n; i++) assert(p[i] == !p2[i]);
+        for (int i = 0; i < lvl2param::n; i++) {
+            _assert(p[i] == !p2[i]);
+        }
     }
     cout << "Passed" << endl;
 }

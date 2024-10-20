@@ -2,7 +2,7 @@
 #include <gperftools/profiler.h>
 #endif
 
-#include <cassert>
+#include "my_assert.h"
 #include <chrono>
 #include <iostream>
 #include <random>
@@ -50,8 +50,10 @@ int main()
     ProfilerStop();
 #endif
     pres = bootsSymDecrypt(cres, *sk);
-    for (int i = 0; i < num_test; i++) assert(pres[i] == !(pa[i] & pb[i]));
-    cout << "Passed" << endl;
+    for (int i = 0; i < num_test; i++) {
+        _assert(pres[i] == !(pa[i] & pb[i]));
+    }
+   cout << "Passed" << endl;
     double elapsed =
         std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
             .count();
