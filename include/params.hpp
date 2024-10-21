@@ -12,62 +12,30 @@ template <class T, size_t N>
 struct alignas(64) aligned_array : public std::array<T, N> {};
 
 enum class ErrorDistribution { ModularGaussian, CenteredBinomial };
-
-// Use old 80bit security parameters. It is faster, but not recommended.
-#if defined(USE_80BIT_SECURITY)
-#include "params/CGGI16.hpp"
-#elif defined(USE_COMPRESS)
-#include "params/compress.hpp"
-#elif defined(USE_CGGI19)
-#include "params/CGGI19.hpp"
-#elif defined(USE_CONCRETE)
-#include "params/concrete.hpp"
-#elif defined(USE_TFHE_RS)
-#include "params/tfhe-rs.hpp"
-#elif defined(USE_TERNARY)
-#include "params/ternary.hpp"
-#else
 #include "params/128bit.hpp"
-#endif
-
 struct lvl01param {
     using domainP = lvl0param;
     using targetP = lvl1param;
-#ifdef USE_KEY_BUNDLE
-    static constexpr uint32_t Addends = 2;
-#else
     static constexpr uint32_t Addends = 1;
-#endif
 };
 
 struct lvlh1param {
     using domainP = lvlhalfparam;
     using targetP = lvl1param;
-#ifdef USE_KEY_BUNDLE
-    static constexpr uint32_t Addends = 2;
-#else
     static constexpr uint32_t Addends = 1;
-#endif
+
 };
 
 struct lvl02param {
     using domainP = lvl0param;
     using targetP = lvl2param;
-#ifdef USE_KEY_BUNDLE
-    static constexpr uint32_t Addends = 2;
-#else
     static constexpr uint32_t Addends = 1;
-#endif
 };
 
 struct lvlh2param {
     using domainP = lvlhalfparam;
     using targetP = lvl2param;
-#ifdef USE_KEY_BUNDLE
-    static constexpr uint32_t Addends = 2;
-#else
     static constexpr uint32_t Addends = 1;
-#endif
 };
 
 template <class P>
@@ -115,21 +83,13 @@ using TRGSWNTT = std::array<TRLWENTT<P>, (P::k + 1) * P::l>;
 template <class P>
 using TRGSWRAINTT = std::array<TRLWERAINTT<P>, (P::k + 1) * P::l>;
 
-#ifdef USE_KEY_BUNDLE
-template <class P>
-using BootstrappingKeyElement =
-    std::array<TRGSW<typename P::targetP>, (1 << P::Addends) - 1>;
-template <class P>
-using BootstrappingKeyElementFFT =
-    std::array<TRGSWFFT<typename P::targetP>, 1 << P::Addends>;
-#else
 template <class P>
 using BootstrappingKeyElement =
     std::array<TRGSW<typename P::targetP>, P::domainP::key_value_diff>;
 template <class P>
 using BootstrappingKeyElementFFT =
     std::array<TRGSWFFT<typename P::targetP>, P::domainP::key_value_diff>;
-#endif
+
 
 template <class P>
 using BootstrappingKey =
