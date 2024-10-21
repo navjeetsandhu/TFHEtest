@@ -1,4 +1,5 @@
 #include <gate.hpp>
+#include <gate_ntt.hpp>
 
 namespace TFHEpp {
 
