@@ -10,7 +10,13 @@ else
     echo "This is not macOS"
 fi
 
-rm -rf build
+if [ -d "build" ]; then
+    echo "Directory 'build' exists."
+    rm -rf build
+else
+    echo "Directory 'build' does not exist."
+fi
+
 mkdir build
 cd build
 cmake ..
