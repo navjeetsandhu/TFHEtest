@@ -1,11 +1,8 @@
 # TFHEpp
 TFHEpp is full Scracthed pure C++ Ver. of TFHE. TFHEpp is slightly(about 10%) faster than original [TFHE implementation](https://github.com/tfhe/tfhe). 
 
-# Building on MAC
-Only old MAC with intel processor are supported
-export following variables before build:
-1. export LDFLAGS="-L/usr/local/opt/libomp/lib"
-2. export CPPFLAGS="-I/usr/local/opt/libomp/include"
+# Building
+bash hexl_build.sh
 
 # Supported Compiler
 GCC9.1 later are primarily supported compilers.
@@ -33,9 +30,3 @@ TFHEpp uses the following HEXL limited functionalities in certain scenarios:
 3.	Elementwise vector multiplication with modular reduction: EltwiseMultMod()
 4.	Elementwise vector addition with modular reduction: EltwiseAddMod()
 
-## Build
-rm -rf build
-mkdir build
-cd build
-cmake ..
-make
