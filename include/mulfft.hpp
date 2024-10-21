@@ -172,58 +172,18 @@ inline void TwistIFFT(PolynomialInFD<P> &res, const Polynomial<P> &a)
 template <uint32_t N>
 inline void MulInFD(std::array<double, N> &res, const std::array<double, N> &b)
 {
-#ifdef USE_INTERLEAVED_FORMAT
-    for (int i = 0; i < N / 2; i++) {
-        const std::complex tmp = std::complex(res[2 * i], res[2 * i + 1]) *
-                                 std::complex(b[2 * i], b[2 * i + 1]);
-        res[2 * i] = tmp.real();
-        res[2 * i + 1] = tmp.imag();
-    }
-#else
     for (int i = 0; i < N / 2; i++) {
         double aimbim = res[i + N / 2] * b[i + N / 2];
         double arebim = res[i] * b[i + N / 2];
         res[i] = std::fma(res[i], b[i], -aimbim);
         res[i + N / 2] = std::fma(res[i + N / 2], b[i], arebim);
     }
-#endif
 }
 
 template <uint32_t N>
 inline void MulInFD(std::array<double, N> &res, const std::array<double, N> &a,
                     const std::array<double, N> &b)
 {
-#ifdef USE_INTERLEAVED_FORMAT
-    for (int i = 0; i < N / 2; i++) {
-        const std::complex tmp = std::complex(a[2 * i], a[2 * i + 1]) *
-                                 std::complex(b[2 * i], b[2 * i + 1]);
-        res[2 * i] = tmp.real();
-        res[2 * i + 1] = tmp.imag();
-    }
-#else
-    // for (int i = 0; i < N / 2; i++) {
-    //     double aimbim = a[i + N / 2] * b[i + N / 2];
-    //     double arebim = a[i] * b[i + N / 2];
-    //     res[i] = std::fma(a[i], b[i], -aimbim);
-    //     res[i + N / 2] = std::fma(a[i + N / 2], b[i], arebim);
-    // }
-
-    // for (int i = 0; i < N / 2; i++) {
-    //     res[i] = a[i + N / 2] * b[i + N / 2];
-    //     res[i + N / 2] = a[i] * b[i + N / 2];
-    // }
-    // for (int i = 0; i < N / 2; i++) {
-    //     res[i] = std::fma(a[i], b[i], -res[i]);
-    //     res[i + N / 2] = std::fma(a[i + N / 2], b[i], res[i + N / 2]);
-    // }
-
-    // for (int i = 0; i < N / 2; i++) {
-    //     double arebre = a[i] * b[i];
-    //     double aimbre = a[i + N/2] * b[i];
-    //     res[i] = std::fma(- a[i + N / 2] , b[i + N / 2],arebre);
-    //     res[i + N / 2] = std::fma(a[i], b[i  + N / 2], aimbre);
-    // }
-
     for (int i = 0; i < N / 2; i++) {
         res[i] = a[i] * b[i];
         res[i + N / 2] = a[i + N / 2] * b[i];
@@ -232,7 +192,6 @@ inline void MulInFD(std::array<double, N> &res, const std::array<double, N> &a,
         res[i + N / 2] += a[i] * b[i + N / 2];
         res[i] -= a[i + N / 2] * b[i + N / 2];
     }
-#endif
 }
 
 // Be careful about memory accesss (We assume b has relatively high memory
@@ -241,14 +200,6 @@ template <uint32_t N>
 inline void FMAInFD(std::array<double, N> &res, const std::array<double, N> &a,
                     const std::array<double, N> &b)
 {
-#ifdef USE_INTERLEAVED_FORMAT
-    for (int i = 0; i < N / 2; i++) {
-        std::complex tmp = std::complex(a[2 * i], a[2 * i + 1]) *
-                           std::complex(b[2 * i], b[2 * i + 1]);
-        res[2 * i] += tmp.real();
-        res[2 * i + 1] += tmp.imag();
-    }
-#else
     for (int i = 0; i < N / 2; i++) {
         res[i] = std::fma(a[i], b[i], res[i]);
         res[i + N / 2] = std::fma(a[i + N / 2], b[i], res[i + N / 2]);
@@ -257,13 +208,6 @@ inline void FMAInFD(std::array<double, N> &res, const std::array<double, N> &a,
         res[i + N / 2] = std::fma(a[i], b[i + N / 2], res[i + N / 2]);
         res[i] -= a[i + N / 2] * b[i + N / 2];
     }
-// for (int i = 0; i < N / 2; i++) {
-//     res[i] = std::fma(a[i + N / 2], b[i + N / 2], -res[i]);
-//     res[i] = std::fma(a[i], b[i], -res[i]);
-//     res[i + N / 2] = std::fma(a[i], b[i + N / 2], res[i + N / 2]);
-//     res[i + N / 2] = std::fma(a[i + N / 2], b[i], res[i + N / 2]);
-// }
-#endif
 }
 
 template <class P>
@@ -327,15 +271,11 @@ inline void PolyMulRescaleUnsigned(Polynomial<P> &res,
                                    const UnsignedPolynomial<P> &a,
                                    const UnsignedPolynomial<P> &b)
 {
-    // if constexpr (std::is_same_v<typename P::T, uint32_t>) {
     PolynomialInFD<P> ffta, fftb;
     TwistIFFT<P>(ffta, a);
     TwistIFFT<P>(fftb, b);
     MulInFD<P::n>(ffta, ffta, fftb);
     TwistFFTrescale<P>(res, ffta);
-    // }
-    // else
-    //     static_assert(false_v<typename P::T>, "Undefined PolyMul!");
 }
 
 
@@ -374,25 +314,4 @@ std::unique_ptr<std::array<PolynomialNTT<P>, 2 * P::n>> XaittGenNTT()
     return xaitt;
 }
 
-#if defined(USE_TERNARY) || defined(USE_KEY_BUNDLE)
-alignas(64) static const std::unique_ptr<
-    const std::array<PolynomialInFD<lvl1param>, 2 * lvl1param::n>> xaittlvl1 =
-    XaittGen<lvl1param>();
-alignas(64) static const std::unique_ptr<
-    const std::array<PolynomialInFD<lvl2param>, 2 * lvl2param::n>> xaittlvl2 =
-    XaittGen<lvl2param>();
-#endif
-#ifdef USE_TERNARY
-template <class P>
-inline void PolynomialMulByXaiMinusOneInFD(PolynomialInFD<P> &res,
-                                           const PolynomialInFD<P> &poly,
-                                           const int a)
-{
-    const int mod = a % (2 * P::n);
-    const int index = mod > 0 ? mod : mod + (2 * P::n);
-    if constexpr (std::is_same_v<P, lvl1param>) {
-        MulInFD<P::n>(res, poly, (*xaittlvl1)[index]);
-    }
-}
-#endif
 }  // namespace TFHEpp

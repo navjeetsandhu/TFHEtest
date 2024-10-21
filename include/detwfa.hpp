@@ -48,33 +48,6 @@ void CMUXFFTwithPolynomialMulByXaiMinusOne(
             for (int i = 0; i < bkP::targetP::n; i++) acc[k][i] += temp[k][i];
     }
     else {
-#ifdef USE_TERNARY_CMUX
-        alignas(32) TRGSWFFT<typename bkP::targetP> trgsw;
-        if constexpr (std::is_same_v<typename bkP::targetP, lvl1param>) {
-            trgsw = trgswonelvl1;
-        }
-        else if constexpr (std::is_same_v<typename bkP::targetP, lvl2param>) {
-            trgsw = trgswonelvl2;
-        }
-        int count = 0;
-        alignas(32) PolynomialInFD<typename bkP::targetP> poly;
-        for (int i = bkP::domainP::key_value_min;
-             i <= bkP::domainP::key_value_max; i++) {
-            if (i != 0) {
-                for (int j = 0; j < (bkP::targetP::k + 1) * bkP::targetP::l;
-                     j++) {
-                    for (int k = 0; k < bkP::targetP::k + 1; k++) {
-                        PolynomialMulByXaiMinusOneInFD<typename bkP::targetP>(
-                            poly, cs[count][j][k], a * i);
-                        for (int l = 0; l < bkP::targetP::n; l++)
-                            trgsw[j][k][l] += poly[l];
-                    }
-                }
-                count++;
-            }
-        }
-        trgswfftExternalProduct<typename bkP::targetP>(acc, acc, trgsw);
-#else
         alignas(32) TRLWE<typename bkP::targetP> temp;
         int count = 0;
         for (int i = bkP::domainP::key_value_min;
@@ -93,7 +66,6 @@ void CMUXFFTwithPolynomialMulByXaiMinusOne(
                 count++;
             }
         }
-#endif
     }
 }
 
