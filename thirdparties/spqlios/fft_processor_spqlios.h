@@ -53,3 +53,5 @@ public:
 
 constexpr uint32_t N_FFT = 64;
 extern thread_local FFT_Processor_Spqlios fftp;
+extern thread_local FFT_Processor_Spqlios fftplvl1;
+extern thread_local FFT_Processor_Spqlios fftplvl2;

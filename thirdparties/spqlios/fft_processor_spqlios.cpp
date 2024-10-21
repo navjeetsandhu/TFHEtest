@@ -2,6 +2,8 @@
 #include <cmath>
 #include<cstdint>
 
+#include<params.hpp>
+
 #include "x86.h"
 #include "fft_processor_spqlios.h"
 
@@ -252,4 +254,5 @@ FFT_Processor_Spqlios::~FFT_Processor_Spqlios() {
     delete[] cosomegaxminus1;
 }
 thread_local FFT_Processor_Spqlios fftp(N_FFT);
-
+thread_local FFT_Processor_Spqlios fftplvl1(TFHEpp::lvl1param::n);
+thread_local FFT_Processor_Spqlios fftplvl2(TFHEpp::lvl2param::n);
