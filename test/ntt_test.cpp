@@ -2,7 +2,7 @@
 #include <numeric>
 #include "mult_ntt_hexl.hpp"
 #include "mult_fft.hpp"
-#include"utils.hpp"
+#include"utils2.hpp"
 
 std::unique_ptr<intel::hexl::NTT> create_ntt(uint64_t N, uint64_t modulus) {
     auto ntt = std::make_unique<intel::hexl::NTT>(N, modulus);

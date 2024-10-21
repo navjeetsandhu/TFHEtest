@@ -1,7 +1,7 @@
 #include "mult_fft.hpp"
 #include "mult_ntt_cuhe.hpp"
 #include "mult_ntt_hexl.hpp"
-#include"utils.hpp"
+#include"utils2.hpp"
 #include <numeric>
 #include <cmath>
 
