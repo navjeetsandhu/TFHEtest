@@ -24,42 +24,6 @@ template <class P>
 inline void Decomposition(DecomposedPolynomial<P> &decpoly,
                           const Polynomial<P> &poly, typename P::T randbits = 0)
 {
-#ifdef USE_OPTIMAL_DECOMPOSITION
-    // https://eprint.iacr.org/2021/1161
-    constexpr typename P::T roundoffset =
-        1ULL << (std::numeric_limits<typename P::T>::digits - P::l * P::Bgbit -
-                 1);
-    constexpr typename P::T mask =
-        static_cast<typename P::T>((1ULL << P::Bgbit) - 1);
-    constexpr typename P::T Bgl = 1ULL << (P::l * P::Bgbit);
-
-    Polynomial<P> K;
-    for (int i = 0; i < P::n; i++) {
-        K[i] = (poly[i] + roundoffset) >>
-               (std::numeric_limits<typename P::T>::digits - P::l * P::Bgbit);
-        if (K[i] > Bgl / 2)
-            K[i] -= Bgl;
-        else if (K[i] == Bgl / 2) {
-            if (randbits & 1) K[i] -= Bgl;
-            randbits >>= 1;
-        }
-    }
-    for (int l = 0; l < P::l; l++) {
-        for (int i = 0; i < P::n; i++) {
-            // https://github.com/zama-ai/tfhe-rs/blob/06b700f9042eb5dfbaf073bb6b7f71bff4be1c2f/tfhe/src/core_crypto/commons/math/decomposition/iter.rs#L117-L124
-            auto &ki = decpoly[P::l - l - 1][i];
-            ki = K[i] & mask;
-            K[i] >>= P::Bgbit;
-            // if((ki>P::Bg/2)||((ki==P::Bg/2)&&((K[i]&mask)>=P::Bg/2))){
-            //     ki -= P::Bg;
-            //     K[i] += 1;
-            // }
-            const auto carry = (((ki - 1) | K[i]) & ki) >> (P::Bgbit - 1);
-            K[i] += carry;
-            ki -= carry << P::Bgbit;
-        }
-    }
-#else
     constexpr typename P::T offset = offsetgen<P>();
     constexpr typename P::T roundoffset =
         1ULL << (std::numeric_limits<typename P::T>::digits - P::l * P::Bgbit -
@@ -76,7 +40,6 @@ inline void Decomposition(DecomposedPolynomial<P> &decpoly,
                              mask) -
                             halfBg;
     }
-#endif
 }
 
 template <class P>

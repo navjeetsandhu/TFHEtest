@@ -20,22 +20,6 @@ void bkgen(BootstrappingKey<P>& bk, const Key<typename P::domainP>& domainkey,
            const Key<typename P::targetP>& targetkey)
 {
     Polynomial<typename P::targetP> plainpoly = {};
-#ifdef USE_KEY_BUNDLE
-    for (int i = 0; i < P::domainP::k * P::domainP::n / P::Addends; i++) {
-        plainpoly[0] =
-            static_cast<int32_t>(domainkey[2 * i] * domainkey[2 * i + 1]);
-        bk[i][0] = trgswSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::alpha, targetkey);
-        plainpoly[0] =
-            static_cast<int32_t>(domainkey[2 * i] * (1 - domainkey[2 * i + 1]));
-        bk[i][1] = trgswSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::alpha, targetkey);
-        plainpoly[0] =
-            static_cast<int32_t>((1 - domainkey[2 * i]) * domainkey[2 * i + 1]);
-        bk[i][2] = trgswSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::alpha, targetkey);
-    }
-#else
     for (int i = 0; i < P::domainP::k * P::domainP::n; i++) {
         int count = 0;
         for (int j = P::domainP::key_value_min; j <= P::domainP::key_value_max;
@@ -48,7 +32,6 @@ void bkgen(BootstrappingKey<P>& bk, const Key<typename P::domainP>& domainkey,
             }
         }
     }
-#endif
 }
 
 template <class P>
@@ -64,22 +47,6 @@ void bkfftgen(BootstrappingKeyFFT<P>& bkfft,
               const Key<typename P::targetP>& targetkey)
 {
     Polynomial<typename P::targetP> plainpoly = {};
-#ifdef USE_KEY_BUNDLE
-    for (int i = 0; i < P::domainP::k * P::domainP::n / P::Addends; i++) {
-        plainpoly[0] =
-            static_cast<int32_t>(domainkey[2 * i] * domainkey[2 * i + 1]);
-        bkfft[i][0] = trgswfftSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::alpha, targetkey);
-        plainpoly[0] =
-            static_cast<int32_t>(domainkey[2 * i] * (1 - domainkey[2 * i + 1]));
-        bkfft[i][1] = trgswfftSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::alpha, targetkey);
-        plainpoly[0] =
-            static_cast<int32_t>((1 - domainkey[2 * i]) * domainkey[2 * i + 1]);
-        bkfft[i][2] = trgswfftSymEncrypt<typename P::targetP>(
-            plainpoly, P::targetP::alpha, targetkey);
-    }
-#else
     for (int i = 0; i < P::domainP::k * P::domainP::n; i++) {
         int count = 0;
         for (int j = P::domainP::key_value_min; j <= P::domainP::key_value_max;
@@ -92,7 +59,6 @@ void bkfftgen(BootstrappingKeyFFT<P>& bkfft,
             }
         }
     }
-#endif
 }
 
 template <class P>
