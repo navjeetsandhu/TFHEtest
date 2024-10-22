@@ -1,4 +1,3 @@
-#include "my_assert.h"
 #include <fstream>
 #include <iostream>
 #include <tfhe++.hpp>
@@ -23,11 +22,11 @@ int main()
             ski.serialize(ar);
         }
         for (int i = 0; i < TFHEpp::lvl0param::n; i++)
-            _assert(sk.key.lvl0[i] == ski.key.lvl0[i]);
+            c_assert(sk.key.lvl0[i] == ski.key.lvl0[i]);
         for (int i = 0; i < TFHEpp::lvl1param::n; i++)
-            _assert(sk.key.lvl1[i] == ski.key.lvl1[i]);
+            c_assert(sk.key.lvl1[i] == ski.key.lvl1[i]);
         for (int i = 0; i < TFHEpp::lvl2param::n; i++)
-            _assert(sk.key.lvl2[i] == ski.key.lvl2[i]);
+            c_assert(sk.key.lvl2[i] == ski.key.lvl2[i]);
 
         for (int i = 0; i < 10; i++)
             std::cout << "sk.key.lvl0[" << i << "]"<< ": " << ski.key.lvl0[i] << std::endl;
