@@ -48,6 +48,7 @@ add_subdirectory(src)
 
 if(ENABLE_TEST)
   add_subdirectory(test)
+  add_subdirectory(ntt_test)
 endif()
 
 if(ENABLE_TUTORIAL)
