@@ -74,12 +74,12 @@ struct lvl2param {
     static constexpr std::uint32_t Bg = 1 << Bgbit;
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
-    static const inline double alpha = std::pow(2.0, -47);  // fresh noise
+    static const inline double alpha = std::pow(2.0, -50);  // fresh noise
     using T = uint64_t;                                 // Torus representation
     static constexpr std::make_signed_t<T> mu = 1LL << 61;
     static constexpr uint32_t plain_modulus = 8;
     static constexpr double delta =
-        static_cast<double>(1ULL << (std::numeric_limits<T>::digits - 4));
+        static_cast<double>(1ULL << (std::numeric_limits<T>::digits - 4));  //amplifier the message
 };
 
 struct lvl3param {
