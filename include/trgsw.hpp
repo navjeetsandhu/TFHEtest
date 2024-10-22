@@ -140,7 +140,7 @@ void trgswnttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
     TwistINTT<P>(decpolyntt, decpoly[0]);
     TRLWENTT<P> restrlwentt;
     for (int m = 0; m < P::k + 1; m++)
-#ifdef USE_HEXL
+#ifdef USE_HEXL1
         intel::hexl::EltwiseMultMod(&(restrlwentt[m][0].value),
                                     &(decpolyntt[0].value),
                                     &(trgswntt[0][m][0].value), P::n, lvl1P, 1);
@@ -151,7 +151,7 @@ void trgswnttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
     for (int i = 1; i < P::l; i++) {
         TwistINTT<P>(decpolyntt, decpoly[i]);
         for (int m = 0; m < P::k + 1; m++)
-#ifdef USE_HEXL
+#ifdef USE_HEXL1
         {
             std::array<uint64_t, TFHEpp::lvl1param::n> temp;
             intel::hexl::EltwiseMultMod(temp.data(), &(decpolyntt[0].value),
@@ -171,7 +171,7 @@ void trgswnttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
         for (int i = 0; i < P::l; i++) {
             TwistINTT<P>(decpolyntt, decpoly[i]);
             for (int m = 0; m < P::k + 1; m++)
-#ifdef USE_HEXL
+#ifdef USE_HEXL1
             {
                 std::array<uint64_t, TFHEpp::lvl1param::n> temp;
                 intel::hexl::EltwiseMultMod(

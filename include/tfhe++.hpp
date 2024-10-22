@@ -12,6 +12,7 @@
 #include "externs/trgsw.hpp"
 #include "externs/trlwe.hpp"
 #include "gate.hpp"
+#include "gate_ntt.hpp"
 #include "gatebootstrapping.hpp"
 #include "homdecomp.hpp"
 #include "io-packet.hpp"
@@ -21,6 +22,7 @@
 #include "tlwe.hpp"
 #include "trgsw.hpp"
 #include "trlwe.hpp"
+#include "c_assert.hpp"
 
 #ifndef __clang__
 // Because of some resons (may be clang bug?) this will gives linking error

@@ -1,25 +1,10 @@
 #pragma once
-//#define USE_HEXL
 #include <memory>
-
 #include "INTorus.hpp"
-#ifdef USE_FFTW3
-#include <fft_processor_fftw.h>
-#elif USE_MKL
-#include <fft_processor_mkl.hpp>
-#elif USE_SPQLIOX_AARCH64
-#include <fft_processor_spqliox_aarch64.h>
-#elif USE_CONCRETE_FFT
-#include <fft_processor_concrete.hpp>
-#else
 #include <fft_processor_spqlios.h>
-#endif
-#ifdef USE_HEXL
-#include "hexl/hexl.hpp"
-#endif
 
-#ifdef USE_INTERLEAVED_FORMAT
-#include <complex>
+#ifdef USE_HEXL1
+#include "hexl/hexl.hpp"
 #endif
 
 #include "cuhe++.hpp"
@@ -60,7 +45,7 @@ inline void HexlComputeInverse(Polynomial<P> &res, PolynomialNTT<P> &a,
 {
     // std::cout << "@";
     std::array<uint64_t, lvl1param::n> temp{};
-#ifdef USE_HEXL
+#ifdef USE_HEXL1
     static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
     nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
 #endif
@@ -71,7 +56,7 @@ template <class P>
 inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
 {
     if constexpr (std::is_same_v<P, lvl1param>)
-#ifdef USE_HEXL
+#ifdef USE_HEXL1
         HexlComputeInverse<P>(res,a);
 #else
         cuHEpp::TwistNTT<typename lvl1param::T, lvl1param::nbit>(
@@ -130,7 +115,7 @@ inline void HexlComputeForward(PolynomialNTT<P> &res, const Polynomial<P> &a,
         //std::cout << "*";
     std::array<uint64_t, lvl1param::n> temp{};
     for (int i = 0; i < n; i++) temp[i] = a[i];
-#ifdef USE_HEXL
+#ifdef USE_HEXL1
     static intel::hexl::NTT nttlvl1(n, moduli);
     nttlvl1.ComputeForward(&(res[0].value), temp.data(), 1, 1);
 #endif
@@ -140,7 +125,7 @@ template <class P>
 inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
 {
     if constexpr (std::is_same_v<P, lvl1param>)
-#ifdef USE_HEXL
+#ifdef USE_HEXL1
         HexlComputeForward<P>(res,a);
 #else
         cuHEpp::TwistINTT<typename P::T, P::nbit>(res, a, (*ntttablelvl1)[1],
