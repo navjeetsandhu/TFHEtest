@@ -10,21 +10,21 @@ uint8_t AndCheck(const uint8_t in0, const uint8_t in1) { return in0 * in1; }
 void RunTest()
 {
 
-    cout << "------ Testing of NTT AND gate for lvl1param ------" << endl;
+    cout << "------ Testing of NTT AND gate for lvl2param ------" << endl;
     SecretKey* sk = new SecretKey();
     TFHEpp::EvalKey ek;
-    ek.emplacebkntt<TFHEpp::lvl01param>(*sk);
-    ek.emplaceiksk<TFHEpp::lvl10param>(*sk);
+    ek.emplacebkntt<TFHEpp::lvl02param>(*sk);
+    ek.emplaceiksk<TFHEpp::lvl20param>(*sk);
     vector<uint8_t> p(2, 1);
     vector<uint8_t> p2(2);
-    vector<TLWE<lvl1param>> cres(1);
-    vector<TLWE<lvl1param>> c(2);
+    vector<TLWE<lvl2param>> cres(1);
+    vector<TLWE<lvl2param>> c(2);
 
-    c = bootsSymEncrypt<lvl1param>(p, *sk);
+    c = bootsSymEncrypt<lvl2param>(p, *sk);
 
-    TFHEpp::HomAND_NTT<lvl10param, lvl01param, lvl1param::mu>(cres[0], c[0], c[1], ek);
+    TFHEpp::HomAND_NTT<lvl20param, lvl02param, lvl2param::mu>(cres[0], c[0], c[1], ek);
 
-    p2 = bootsSymDecrypt<lvl1param>(cres, *sk);
+    p2 = bootsSymDecrypt<lvl2param>(cres, *sk);
 
     c_assert(1 == p2[0]);
     cout << "------ pass ------" << endl;
