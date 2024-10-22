@@ -4,9 +4,6 @@
 using namespace TFHEpp;
 using namespace std;
 
-uint8_t AndCheck(const uint8_t in0, const uint8_t in1) { return in0 * in1; }
-
-
 void RunTest()
 {
 
