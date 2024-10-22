@@ -65,13 +65,13 @@ struct lvl1param {
 struct lvl2param {
     static constexpr int32_t key_value_max = 1;
     static constexpr int32_t key_value_min = -1;
-    static const std::uint32_t nbit = 11;  // dimension must be a power of 2 for
+    static const std::uint32_t nbit = 14;  // dimension must be a power of 2 for
                                            // ease of polynomial multiplication.
-    static constexpr std::uint32_t n = 1 << nbit;  // dimension
+    static constexpr std::uint32_t n = 1 << nbit;  // 16384, used by Intel FPGA
     static constexpr std::uint32_t k = 1;
     static constexpr std::uint32_t l = 4;
-    static constexpr std::uint32_t Bgbit = 9;
-    static constexpr std::uint32_t Bg = 1 << Bgbit;
+    static constexpr std::uint32_t Bgbit = 9;   // used for decomposition of polynomial
+    static constexpr std::uint32_t Bg = 1 << Bgbit;  //512
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
     static const inline double alpha = std::pow(2.0, -50);  // fresh noise

@@ -15,18 +15,20 @@ void RunTest()
     TFHEpp::EvalKey ek;
     ek.emplacebkntt<TFHEpp::lvl02param>(*sk);
     ek.emplaceiksk<TFHEpp::lvl20param>(*sk);
-    vector<uint8_t> p(2, 1);
-    vector<uint8_t> p2(2);
-    vector<TLWE<lvl2param>> cres(1);
-    vector<TLWE<lvl2param>> c(2);
+    vector<uint8_t> p = {1,1,0};
+    vector<uint8_t> p2(3);
+    vector<TLWE<lvl2param>> cres(2);
+    vector<TLWE<lvl2param>> c(3);
 
     c = bootsSymEncrypt<lvl2param>(p, *sk);
 
     TFHEpp::HomAND_NTT<lvl20param, lvl02param, lvl2param::mu>(cres[0], c[0], c[1], ek);
+    TFHEpp::HomAND_NTT<lvl20param, lvl02param, lvl2param::mu>(cres[1], c[0], c[2], ek);
 
     p2 = bootsSymDecrypt<lvl2param>(cres, *sk);
 
     c_assert(1 == p2[0]);
+    c_assert(0 == p2[1]);
     cout << "------ pass ------" << endl;
 
 }
