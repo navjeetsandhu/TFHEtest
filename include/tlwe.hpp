@@ -110,6 +110,9 @@ bool tlweSymDecrypt(const TLWE<P> &c, const Key<P> &key)
     typename P::T phase = tlweSymPhase<P>(c, key);
     // phase has only message plus error
     // if MSB bit is set than text message is zero or else it is 1.
+
+    std::cout << "phase " << phase << " " << endl;
+
     bool res =
         static_cast<typename std::make_signed<typename P::T>::type>(phase) > 0;
     return res;
