@@ -1,8 +1,8 @@
 #pragma once
 
 #include <cmath>
-#include <cstdint>
 #include <limits>
+#include "hexl_params.hpp"
 
 struct lvl0param {
     static constexpr int32_t key_value_max = 1;
@@ -65,9 +65,8 @@ struct lvl1param {
 struct lvl2param {
     static constexpr int32_t key_value_max = 1;
     static constexpr int32_t key_value_min = -1;
-    static const std::uint32_t nbit = 14;  // dimension must be a power of 2 for
-                                           // ease of polynomial multiplication.
-    static constexpr std::uint32_t n = 1 << nbit;  // 16384, used by Intel FPGA
+    static constexpr std::uint32_t nbit = hexl_params_nbit;
+    static constexpr std::uint32_t n = hexl_params_n;
     static constexpr std::uint32_t k = 1;
     static constexpr std::uint32_t l = 4;
     static constexpr std::uint32_t Bgbit = 9;   // used for decomposition of polynomial
@@ -79,7 +78,7 @@ struct lvl2param {
     static constexpr std::make_signed_t<T> mu = 1LL << 61;
     static constexpr uint32_t plain_modulus = 8;
     static constexpr double delta =
-        static_cast<double>(1ULL << (std::numeric_limits<T>::digits - 4));  //amplifier the message
+        static_cast<double>(1ULL << (std::numeric_limits<T>::digits - 4));  //amplify the message
 };
 
 struct lvl3param {

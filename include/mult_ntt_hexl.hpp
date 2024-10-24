@@ -1,15 +1,9 @@
 #pragma once
 #include "hexl/hexl.hpp"
+#include "params/hexl_params.hpp"
 
 namespace hexl {
-
-    // Biggest prime number less than 2^30 and satisfies 1 mod 2N.
-    // 0x4006d991
-    //constexpr uint64_t moduli = 1073707009;
-
-    // Biggest prime number less than 2^62 and satisfies 1 mod 2N.
-    // 0x4000000000000211
-    constexpr uint64_t moduli = 4611686018427365377ULL;
+    constexpr uint64_t moduli = hexl_params_moduli;
 
     inline void compute_inverse(uint64_t *result,
                                 const uint64_t *operand,

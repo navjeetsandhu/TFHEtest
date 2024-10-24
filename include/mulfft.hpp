@@ -6,7 +6,7 @@
 #ifdef USE_HEXL1
 #include "hexl/hexl.hpp"
 #endif
-
+#include "params/hexl_params.hpp"
 #include "cuhe++.hpp"
 #include "params.hpp"
 #include "utils.hpp"
@@ -31,12 +31,7 @@ namespace TFHEpp {
             std::array<std::array<std::array<raintt::SWord, lvl1param::n>, 2>, 2>>
             raintttable = raintt::TableGen<lvl1param::nbit>();
 
-    // Biggest prime number less than 2^62 and satisfies 1 mod 2N.
-    constexpr uint64_t lvl1P = 4611686018427365377ULL;
-
-    // Biggest prime number less than 2^30 and satisfies 1 mod 2N.
-    //constexpr uint64_t lvl1P = 1073707009;
-    //constexpr uint64_t lvl1P = 136314881;
+    constexpr uint64_t lvl1P = hexl_params_moduli;
 
 template<class P>
 inline void HexlComputeInverse(Polynomial<P> &res, PolynomialNTT<P> &a,
