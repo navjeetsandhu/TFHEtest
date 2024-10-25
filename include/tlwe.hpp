@@ -101,21 +101,33 @@ typename P::T tlweSymPhase(const TLWE<P> &c, const Key<P> &key)
             phase -= c[k * P::n + i] * key[k * P::n + i];
     return phase;
 }
+template <class P>
+bool decryptBit(typename P::T phase) {
+//    if constexpr (std::is_same_v<P, lvl2param>) {
+//        auto message = static_cast<typename P::T>(std::round(phase / P::delta));
+//        std::cout << std::hex << "m: " << message << "  " << endl;
+//        return (message < P::plain_modulus / 2);
+//    }
+    return static_cast<typename std::make_signed<typename P::T>::type>(phase) > 0;
+}
+template <class P>
+typename P::T encryptBit(uint8_t bit )
+{
+    //    if constexpr (std::is_same_v<P, lvl2param>) {
+    //        return bit ? P::mu :  hexl_params_moduli - P::mu;
+    //    }
+    return bit ? P::mu : -P::mu;
+}
+
 
 // Decrypt the message
 template <class P>
 bool tlweSymDecrypt(const TLWE<P> &c, const Key<P> &key)
 {
     // remove the mask from the message
-    typename P::T phase = tlweSymPhase<P>(c, key);
-    // phase has only message plus error
-    // if MSB bit is set than text message is zero or else it is 1.
+    typename P::T phase = tlweSymPhase<P>(c, key); // phase is amplified message plus error
 
-    std::cout << "phase " << phase << " " << endl;
-
-    bool res =
-        static_cast<typename std::make_signed<typename P::T>::type>(phase) > 0;
-    return res;
+    return decryptBit<P>(phase);
 }
 
 template <class P, const uint plain_modulus>
@@ -127,7 +139,7 @@ typename P::T tlweSymIntDecrypt(const TLWE<P> &c, const Key<P> &key)
             1ULL << (std::numeric_limits<typename P::T>::digits - 1)) /
         plain_modulus;
     const typename P::T phase = tlweSymPhase<P>(c, key);
-    typename P::T res = static_cast<typename P::T>(std::round(phase / delta));
+    auto res = static_cast<typename P::T>(std::round(phase / delta));
     return res >= plain_modulus / 2 ? res - plain_modulus : res;
 }
 
@@ -136,6 +148,8 @@ typename P::T tlweSymIntDecrypt(const TLWE<P> &c, const Key<P> &key)
 {
     return tlweSymIntDecrypt<P, P::plain_modulus>(c, key);
 }
+
+
 
 
 //encrypt the vector of binary (1 or 0)
@@ -148,7 +162,7 @@ std::vector<TLWE<P>> bootsSymEncrypt(const std::vector<uint8_t> &p,
     vector<TLWE<P>> c(p.size());
 #pragma omp parallel for
     for (int i = 0; i < p.size(); i++)
-        c[i] = tlweSymEncrypt<P>(p[i] ? P::mu : -P::mu, key);
+        c[i] = tlweSymEncrypt<P>(encryptBit<P>(p[i]), key);
 
     return c;
 }
