@@ -1,4 +1,4 @@
-#include "my_assert.h"
+#include "c_assert.hpp"
 #include <iostream>
 #include <random>
 #include <tfhe++.hpp>
@@ -15,7 +15,7 @@ int main()
     for (int test = 0; test < num_test; test++) {
         TFHEpp::lweKey key;
 
-        std::array<bool, TFHEpp::lvl1param::n> p;
+        std::array<bool, TFHEpp::lvl1param::n> p{};
         for (bool &i : p) i = (binary(engine) > 0);
         TFHEpp::Polynomial<TFHEpp::lvl1param> pmu;
         for (int i = 0; i < TFHEpp::lvl1param::n; i++)
@@ -33,7 +33,7 @@ int main()
             TFHEpp::trlweSymDecrypt<TFHEpp::lvl1param>(c, key.lvl1);
 
         for (int i = 0; i < TFHEpp::lvl1param::n; i++) {
-            _assert(p[i] == p2[i]);
+            c_assert(p[i] == p2[i]);
         }
 
     }
@@ -44,9 +44,9 @@ int main()
     for (int test = 0; test < num_test; test++) {
         TFHEpp::lweKey key;
 
-        std::array<bool, TFHEpp::lvl1param::n> p;
+        std::array<bool, TFHEpp::lvl1param::n> p{};
         for (bool &i : p) i = binary(engine) > 0;
-        std::array<typename TFHEpp::lvl1param::T, TFHEpp::lvl1param::n> pmu;
+        std::array<typename TFHEpp::lvl1param::T, TFHEpp::lvl1param::n> pmu{};
         for (int i = 0; i < TFHEpp::lvl1param::n; i++)
             pmu[i] = p[i] ? TFHEpp::lvl1param::mu : -TFHEpp::lvl1param::mu;
         TFHEpp::TRLWE<TFHEpp::lvl1param> c =
@@ -61,7 +61,7 @@ int main()
         std::array<bool, TFHEpp::lvl1param::n> p2 =
             TFHEpp::trlweSymDecrypt<TFHEpp::lvl1param>(c, key.lvl1);
         for (int i = 0; i < TFHEpp::lvl1param::n; i++) {
-            _assert(p[i] == !p2[i]);
+            c_assert(p[i] == !p2[i]);
         }
     }
     std::cout << "Passed" << std::endl;

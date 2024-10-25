@@ -1,4 +1,4 @@
-#include <cassert>
+#include "c_assert.hpp"
 #include <iostream>
 #include <random>
 #include <tfhe++.hpp>
@@ -45,7 +45,7 @@ int main()
                 pass_flag = false;
                 break;
             }
-            assert(p[i] == p2[i]);
+            c_assert(p[i] == p2[i]);
         }
         if(!pass_flag) break;
     }
@@ -80,7 +80,7 @@ int main()
                 pass_flag = false;
                 break;
             }
-            assert(p[i] == !p2[i]);
+            c_assert(p[i] == !p2[i]);
         }
         if(!pass_flag) break;
     }

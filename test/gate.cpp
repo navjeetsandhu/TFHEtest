@@ -1,5 +1,5 @@
 #include <tfhe++.hpp>
-#include "my_assert.h"
+#include "c_assert.hpp"
 #include <chrono>
 #include <iostream>
 using namespace TFHEpp;
@@ -117,7 +117,7 @@ void Test(string type, Func func, Chegk chegk, vector<uint8_t> p,
     vector<uint8_t> p2(cres.size());
     p2 = bootsSymDecrypt<P>(cres, sk);
     for (int i = 0; i < kNumTests; i++) {
-        _assert(p[i] == p2[i]);
+        c_assert(p[i] == p2[i]);
     }
 
     std::cout << "Passed" << std::endl;

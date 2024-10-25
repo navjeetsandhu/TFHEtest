@@ -1,4 +1,4 @@
-#include "my_assert.h"
+#include "c_assert.hpp"
 #include <iostream>
 #include <random>
 #include <tfhe++.hpp>
@@ -33,7 +33,7 @@ int main()
         trgswfftExternalProduct<lvl1param>(c, c, trgswfft);
         array<bool, lvl1param::n> p2 = trlweSymDecrypt<lvl1param>(c, key.lvl1);
         for (int i = 0; i < lvl1param::n; i++) {
-            _assert(p[i] == p2[i]);
+            c_assert(p[i] == p2[i]);
         }
 
     }
@@ -57,7 +57,7 @@ int main()
         trgswfftExternalProduct<lvl2param>(c, c, trgswfft);
         array<bool, lvl2param::n> p2 = trlweSymDecrypt<lvl2param>(c, key.lvl2);
         for (int i = 0; i < lvl2param::n; i++) {
-            _assert(p[i] == p2[i]);
+            c_assert(p[i] == p2[i]);
         }
     }
     cout << "Passed" << endl;
@@ -83,7 +83,7 @@ int main()
         trgswfftExternalProduct<lvl1param>(c, c, trgswfft);
         array<bool, lvl1param::n> p2 = trlweSymDecrypt<lvl1param>(c, key.lvl1);
         for (int i = 0; i < lvl1param::n; i++) {
-            _assert(p[i] == !p2[i]);
+            c_assert(p[i] == !p2[i]);
         }
 
     }
@@ -107,7 +107,7 @@ int main()
         trgswfftExternalProduct<lvl2param>(c, c, trgswfft);
         array<bool, lvl2param::n> p2 = trlweSymDecrypt<lvl2param>(c, key.lvl2);
         for (int i = 0; i < lvl2param::n; i++) {
-            _assert(p[i] == !p2[i]);
+            c_assert(p[i] == !p2[i]);
         }
     }
     cout << "Passed" << endl;

@@ -1,7 +1,3 @@
-#ifdef USE_PERF
-#include <gperftools/profiler.h>
-#endif
-
 #include "c_assert.hpp"
 #include <chrono>
 #include <iostream>
@@ -13,43 +9,38 @@ using namespace TFHEpp;
 
 int main()
 {
-    std::cout << lvl1param::k << std::endl;
-    constexpr uint32_t num_test = 1000;
+    std::cout << lvl2param::k << std::endl;
+    constexpr uint32_t num_test = 10;
     random_device seed_gen;
     default_random_engine engine(seed_gen());
     uniform_int_distribution<uint32_t> binary(0, 1);
 
     SecretKey* sk = new SecretKey();
     TFHEpp::EvalKey ek;
-    ek.emplacebkfft<TFHEpp::lvl01param>(*sk);
-    ek.emplaceiksk<TFHEpp::lvl10param>(*sk);
+    ek.emplacebkfft<TFHEpp::lvl02param>(*sk);
+    ek.emplaceiksk<TFHEpp::lvl20param>(*sk);
     vector<uint8_t> pa(num_test);
     vector<uint8_t> pb(num_test);
     vector<uint8_t> pres(num_test);
     for (int i = 0; i < num_test; i++) pa[i] = binary(engine) > 0;
     for (int i = 0; i < num_test; i++) pb[i] = binary(engine) > 0;
-    vector<TLWE<TFHEpp::lvl1param>> ca(num_test);
-    vector<TLWE<TFHEpp::lvl1param>> cb(num_test);
-    vector<TLWE<TFHEpp::lvl1param>> cres(num_test);
+    vector<TLWE<TFHEpp::lvl2param>> ca(num_test);
+    vector<TLWE<TFHEpp::lvl2param>> cb(num_test);
+    vector<TLWE<TFHEpp::lvl2param>> cres(num_test);
 
-    ca = bootsSymEncrypt(pa, *sk);
-    cb = bootsSymEncrypt(pb, *sk);
+    ca = bootsSymEncrypt<TFHEpp::lvl2param>(pa, *sk);
+    cb = bootsSymEncrypt<TFHEpp::lvl2param>(pb, *sk);
 
     chrono::system_clock::time_point start, end;
-#ifdef USE_PERF
-    ProfilerStart("nand.prof");
-#endif
+
     start = chrono::system_clock::now();
 
     for (int test = 0; test < num_test; test++) {
-        HomNAND(cres[test], ca[test], cb[test], ek);
+        HomNAND<lvl20param, lvl02param, lvl2param::mu>(cres[test], ca[test], cb[test], ek);
     }
 
     end = chrono::system_clock::now();
-#ifdef USE_PERF
-    ProfilerStop();
-#endif
-    pres = bootsSymDecrypt(cres, *sk);
+    pres = bootsSymDecrypt<TFHEpp::lvl2param>(cres, *sk);
     for (int i = 0; i < num_test; i++) {
         c_assert(pres[i] == !(pa[i] & pb[i]));
     }
