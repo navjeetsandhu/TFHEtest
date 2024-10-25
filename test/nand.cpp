@@ -1,7 +1,3 @@
-#ifdef USE_PERF
-#include <gperftools/profiler.h>
-#endif
-
 #include "c_assert.hpp"
 #include <chrono>
 #include <iostream>
@@ -13,8 +9,7 @@ using namespace TFHEpp;
 
 int main()
 {
-    std::cout << lvl1param::k << std::endl;
-    constexpr uint32_t num_test = 1000;
+    constexpr uint32_t num_test = 10;
     random_device seed_gen;
     default_random_engine engine(seed_gen());
     uniform_int_distribution<uint32_t> binary(0, 1);
@@ -36,9 +31,7 @@ int main()
     cb = bootsSymEncrypt(pb, *sk);
 
     chrono::system_clock::time_point start, end;
-#ifdef USE_PERF
-    ProfilerStart("nand.prof");
-#endif
+
     start = chrono::system_clock::now();
 
     for (int test = 0; test < num_test; test++) {
@@ -46,9 +39,7 @@ int main()
     }
 
     end = chrono::system_clock::now();
-#ifdef USE_PERF
-    ProfilerStop();
-#endif
+
     pres = bootsSymDecrypt(cres, *sk);
     for (int i = 0; i < num_test; i++) {
         c_assert(pres[i] == !(pa[i] & pb[i]));

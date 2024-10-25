@@ -9,7 +9,6 @@ using namespace TFHEpp;
 
 int main()
 {
-    std::cout << lvl2param::k << std::endl;
     constexpr uint32_t num_test = 10;
     random_device seed_gen;
     default_random_engine engine(seed_gen());
