@@ -32,8 +32,8 @@ struct lvlhalfparam {
         ErrorDistribution::ModularGaussian;
     static const inline double alpha = std::pow(2.0, -17);  // fresh noise
     using T = uint32_t;                                 // Torus representation
-    static constexpr T mu = 1U << (std::numeric_limits<T>::digits - 3); // mu = 1U << 29 if T is uint32_t;.
     static constexpr uint32_t plain_modulusbit = 3; // MSB 3 bits are for message 001_ (0x2) or 111_ (0xE)
+    static constexpr T mu = 1U << (std::numeric_limits<T>::digits - plain_modulusbit); // mu = 1U << 29 if T is uint32_t;.
     static constexpr uint32_t plain_modulus = 1<<plain_modulusbit;
     static constexpr double maximum = static_cast<double>(1ULL << std::numeric_limits<T>::digits);
     static constexpr double delta = maximum/plain_modulus;
