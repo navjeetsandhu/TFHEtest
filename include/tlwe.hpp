@@ -104,20 +104,14 @@ typename P::T tlweSymPhase(const TLWE<P> &c, const Key<P> &key)
 }
 template <class P>
 bool decryptBit(typename P::T phase) {
-//    if constexpr (std::is_same_v<P, lvl2param>) {
-//        auto message = static_cast<typename P::T>(std::round(phase / P::delta));
-//        std::cout << std::hex << "m: " << message << "  " << endl;
-//        return (message < P::plain_modulus / 2);
-//    }
-    return static_cast<typename std::make_signed<typename P::T>::type>(phase) > 0;
+    uint64_t message = phase/static_cast<typename P::T>(P::mu);
+    return message < 4;
 }
 template <class P>
 typename P::T encryptBit(uint8_t bit )
 {
-    //    if constexpr (std::is_same_v<P, lvl2param>) {
-    //        return bit ? P::mu :  hexl_params_moduli - P::mu;
-    //    }
-    return bit ? P::mu : -P::mu;
+    typename P::T phase =  bit ? P::mu : 7*P::mu;
+    return phase;
 }
 
 
