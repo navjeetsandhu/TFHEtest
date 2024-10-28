@@ -7,12 +7,7 @@ file(COPY benchmark_docker.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR} FILE_PERMI
 foreach(test_source ${test_sources})
     string( REPLACE ".cpp" "" test_name ${test_source} )
     add_executable(${test_name} ${test_source})
-    if(USE_PERF)
-        add_compile_definitions(USE_PERF)
-        target_link_libraries(${test_name} tfhe++  profiler)
-    else()
-        target_link_libraries(${test_name} tfhe++)
-    endif()
+    target_link_libraries(${test_name} tfhe++)
 endforeach(test_source ${test_sources})
 
 # For GMP used in INTorus test

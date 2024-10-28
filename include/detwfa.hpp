@@ -1,7 +1,6 @@
 #pragma once
 
-#include "trgsw.hpp"
-
+#include "externalproduct.hpp"
 namespace TFHEpp {
 template <class P>
 void CMUXFFT(TRLWE<P> &res, const TRGSWFFT<P> &cs, const TRLWE<P> &c1,
@@ -61,8 +60,8 @@ void CMUXFFTwithPolynomialMulByXaiMinusOne(
                 trgswfftExternalProduct<typename bkP::targetP>(temp, temp,
                                                                cs[count]);
                 for (int k = 0; k < bkP::targetP::k + 1; k++)
-                    for (int i = 0; i < bkP::targetP::n; i++)
-                        acc[k][i] += temp[k][i];
+                    for (int n = 0; n < bkP::targetP::n; n++)
+                        acc[k][n] += temp[k][n];
                 count++;
             }
         }

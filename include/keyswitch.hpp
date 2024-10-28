@@ -3,7 +3,7 @@
 #include <array>
 
 #include "params.hpp"
-#include "trgsw.hpp"
+#include "externalproduct.hpp"
 #include "utils.hpp"
 
 namespace TFHEpp {

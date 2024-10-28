@@ -1,4 +1,4 @@
-#include "trgsw.hpp"
+#include "externalproduct.hpp"
 
 namespace TFHEpp {
 #define INST(P)                                                       \
