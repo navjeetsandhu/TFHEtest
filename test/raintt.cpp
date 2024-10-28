@@ -181,7 +181,7 @@ int main()
                           << static_cast<int32_t>(a[i]) << std::endl;
         for (int i = 0; i < TFHEpp::lvl1param::n; i++) assert(a[i] == res[i]);
     }
-    std::cout << "NTT witout modswitch Passed" << std::endl;
+    std::cout << "NTT without modswitch Passed" << std::endl;
     for (int test = 0; test < num_test; test++) {
         typename TFHEpp::lvl1param::T a = Torus32dist(engine);
         raintt::Word b =
