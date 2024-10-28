@@ -13,6 +13,7 @@
 #include "externs/trlwe.hpp"
 #include "gate.hpp"
 #include "gate_ntt.hpp"
+#include "blindrotate.hpp"
 #include "gatebootstrapping.hpp"
 #include "homdecomp.hpp"
 #include "io-packet.hpp"
