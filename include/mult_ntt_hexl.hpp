@@ -82,4 +82,16 @@ namespace hexl {
         TwistNTT<N>(res, nttc);
     }
 
+    template<int N>
+    inline void PolyMulFpga(std::array<uint64_t, N> &res,
+                           const std::array<uint64_t, N> &a,
+                           const std::array<uint64_t, N> &b)
+    {
+        std::array<uint64_t, N> ntta, nttb, nttc;
+        TwistINTT<N>(ntta, a);
+        TwistINTT<N>(nttb, b);
+        eltwise_mult_mod(nttc.data(), ntta.data(), nttb.data(), N, moduli);
+        TwistNTT<N>(res, nttc);  //lijie: this should be call to FPGA instead
+    }
+
 }
