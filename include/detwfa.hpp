@@ -1,5 +1,5 @@
 #pragma once
-
+#include "trgsw.hpp"
 #include "externalproduct.hpp"
 namespace TFHEpp {
 template <class P>

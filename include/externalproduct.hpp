@@ -6,7 +6,7 @@
 #include "mulfft.hpp"
 #include "params.hpp"
 #include "trlwe.hpp"
-#include "trgsw.hpp"
+#include "decomposition.hpp"
 #include "mult_ntt_hexl.hpp"
 
 namespace TFHEpp {
