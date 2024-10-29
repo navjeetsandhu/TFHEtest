@@ -12,16 +12,10 @@ endforeach(test_source ${test_sources})
 
 # For GMP used in INTorus test
 find_library(gmp NAMES gmp gmpxx)
-#if(gmp)
-#    add_compile_definitions(ENABLE_LSHTEST)
-#    target_link_libraries(INTorus gmp)
-#endif()
+
 
 if(APPLE)
-    message("Compiling on macOS, Set following before building")
-    message("export LDFLAGS=\"-L/usr/local/opt/libomp/lib\"")
-    message("export CPPFLAGS=\"-I/usr/local/opt/libomp/include\"")
-    # Add macOS specific compile options here
+    message("Compiling on macOS")
 else()
     message("Not compiling on macOS")
     if(gmp)

@@ -10,7 +10,7 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 option(USE_HEXL "Use Intel HEXL" ON)
 option(USE_RANDEN "Use randen as CSPRNG" ON)
 option(ENABLE_TEST "Build tests" ON)
-option(ENABLE_TUTORIAL "Build tutorial" ON)
+
 
 set(TFHEpp_DEFINITIONS
     ""
@@ -47,12 +47,12 @@ endif()
 add_subdirectory(src)
 
 if(ENABLE_TEST)
-  add_subdirectory(test)
-  add_subdirectory(ntt_test)
-endif()
-
-if(ENABLE_TUTORIAL)
-    add_subdirectory(tutorial)
+  add_subdirectory(unit_test/test)
+  add_subdirectory(unit_test/ntt)
+  add_subdirectory(unit_test/tutorial)
+  add_subdirectory(unit_test/encrypt)
+  add_subdirectory(unit_test/gate)
+  add_subdirectory(unit_test/externalproduct)
 endif()
 
 install(TARGETS tfhe++ LIBRARY DESTINATION lib)
