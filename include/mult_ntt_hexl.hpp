@@ -44,7 +44,7 @@ namespace hexl {
     }
 
     template <class P>
-    inline void TwistNTT(TFHEpp::Polynomial<P> &res,TFHEpp::PolynomialInHexl<P> &a)
+    inline void TwistNTT(TFHEpp::Polynomial<P> &res,TFHEpp::Polynomial<P> &a)
     {
         if constexpr (std::is_same_v<P, TFHEpp::lvl2param>)
             TwistNTT<TFHEpp::lvl2param::n>(res,a);
@@ -61,7 +61,7 @@ namespace hexl {
     }
 
     template <class P>
-    inline void TwistINTT(TFHEpp::PolynomialInHexl<P> &res, const TFHEpp::Polynomial<P> &a)
+    inline void TwistINTT(TFHEpp::Polynomial<P> &res, const TFHEpp::Polynomial<P> &a)
     {
         if constexpr (std::is_same_v<P, TFHEpp::lvl2param>)
             TwistINTT<TFHEpp::lvl2param::n>(res,a);

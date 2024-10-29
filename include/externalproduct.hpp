@@ -73,13 +73,13 @@ void trgswnttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
 
 template <class P>
 void trgswHexlExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
-                                     const TRGSWHexl<P> &trgswhexl)
+                                     const TRGSW<P> &trgswhexl)
 {
     DecomposedPolynomial<P> decpoly;
     Decomposition<P>(decpoly, trlwe[0]);
-    PolynomialInHexl<P> decpolyhexl;
+    Polynomial<P> decpolyhexl;
     hexl::TwistINTT<P>(decpolyhexl, decpoly[0]);
-    TRLWEInHexl<P> restrlwehexl;
+    TRLWE<P> restrlwehexl;
     for (int m = 0; m < P::k + 1; m++)
 
         hexl::eltwise_mult_mod(&(restrlwehexl[m][0].value),
