@@ -1,9 +1,9 @@
 #pragma once
 #include "hexl/hexl.hpp"
-#include "params/hexl_params.hpp"
+#include "params.hpp"
 
 namespace hexl {
-    constexpr uint64_t moduli = hexl_params_moduli;
+    static constexpr uint64_t moduli = 4611686018427365377ULL;
 
     inline void compute_inverse(uint64_t *result,
                                 const uint64_t *operand,
@@ -21,9 +21,18 @@ namespace hexl {
                                  const uint64_t *p1,
                                  const uint64_t *p2,
                                  uint64_t degree,
-                                 uint64_t modulus) {
+                                 uint64_t modulus = moduli) {
         intel::hexl::EltwiseMultMod(result, p1, p2, degree, modulus,1);
     }
+
+    inline void eltwise_add_mod(uint64_t *result,
+                                 const uint64_t *p1,
+                                 const uint64_t *p2,
+                                 uint64_t degree,
+                                 uint64_t modulus = moduli) {
+        intel::hexl::EltwiseAddMod(result, p1, p2, degree, modulus);
+    }
+
 
     template<int N>
     inline void TwistNTT(std::array<uint64_t, N> &res,

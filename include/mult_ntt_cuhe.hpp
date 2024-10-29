@@ -1,6 +1,6 @@
 #pragma once
 #include "INTorus.hpp"
-#include "cuhe.hpp"
+#include "cuhe++.hpp"
 
 namespace cuHEpp {
 

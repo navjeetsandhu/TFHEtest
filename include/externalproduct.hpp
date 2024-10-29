@@ -7,6 +7,7 @@
 #include "params.hpp"
 #include "trlwe.hpp"
 #include "trgsw.hpp"
+#include "mult_ntt_hexl.hpp"
 
 namespace TFHEpp {
 
@@ -71,7 +72,7 @@ void trgswnttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
 
 
 template <class P>
-void trgswhexlExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
+void trgswHexlExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
                                      const TRGSWNTT<P> &trgswntt)
 {
     DecomposedPolynomial<P> decpoly;
@@ -80,119 +81,45 @@ void trgswhexlExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
     TwistINTT<P>(decpolyntt, decpoly[0]);
     TRLWENTT<P> restrlwentt;
     for (int m = 0; m < P::k + 1; m++)
-#ifdef USE_HEXL1
-        intel::hexl::EltwiseMultMod(&(restrlwentt[m][0].value),
+
+        hexl::eltwise_mult_mod(&(restrlwentt[m][0].value),
                                     &(decpolyntt[0].value),
-                                    &(trgswntt[0][m][0].value), P::n, lvl1P, 1);
-#else
-        for (int i = 0; i < P::n; i++)
-            restrlwentt[m][i] = decpolyntt[i] * trgswntt[0][m][i];
-#endif
+                                    &(trgswntt[0][m][0].value), P::n);
+
     for (int i = 1; i < P::l; i++) {
         TwistINTT<P>(decpolyntt, decpoly[i]);
         for (int m = 0; m < P::k + 1; m++)
-#ifdef USE_HEXL1
+
         {
-            std::array<uint64_t, TFHEpp::lvl1param::n> temp;
-            intel::hexl::EltwiseMultMod(temp.data(), &(decpolyntt[0].value),
-                                        &(trgswntt[i][m][0].value), P::n, lvl1P,
-                                        1);
-            intel::hexl::EltwiseAddMod(&(restrlwentt[m][0].value),
+            std::array<uint64_t, hexl_params_n> temp{};
+            hexl::eltwise_mult_mod(temp.data(), &(decpolyntt[0].value),
+                                        &(trgswntt[i][m][0].value), P::n);
+            hexl::eltwise_add_mod(&(restrlwentt[m][0].value),
                                        &(restrlwentt[m][0].value), temp.data(),
-                                       P::n, lvl1P);
+                                       P::n);
         }
-#else
-            for (int j = 0; j < P::n; j++)
-                restrlwentt[m][j] += decpolyntt[j] * trgswntt[i][m][j];
-#endif
+
     }
     for (int k = 1; k < P::k + 1; k++) {
         Decomposition<P>(decpoly, trlwe[k]);
         for (int i = 0; i < P::l; i++) {
             TwistINTT<P>(decpolyntt, decpoly[i]);
             for (int m = 0; m < P::k + 1; m++)
-#ifdef USE_HEXL1
             {
-                std::array<uint64_t, TFHEpp::lvl1param::n> temp;
-                intel::hexl::EltwiseMultMod(
+                std::array<uint64_t, hexl_params_n> temp{};
+                hexl::eltwise_mult_mod(
                     temp.data(), &(decpolyntt[0].value),
                     &(trgswntt[i + k * P::l][m][0].value), P::n, lvl1P, 1);
-                intel::hexl::EltwiseAddMod(&(restrlwentt[m][0].value),
+                hexl::eltwise_add_mod(&(restrlwentt[m][0].value),
                                            &(restrlwentt[m][0].value),
-                                           temp.data(), P::n, lvl1P);
+                                           temp.data(), P::n);
             }
-#else
-                for (int j = 0; j < P::n; j++)
-                    restrlwentt[m][j] +=
-                        decpolyntt[j] * trgswntt[i + k * P::l][m][j];
-#endif
+
         }
     }
     for (int k = 0; k < P::k + 1; k++) TwistNTT<P>(res[k], restrlwentt[k]);
 }
 
-
-
-template <class P>
-void trgswnttExternalProductObsolete(TRLWE<P> &res, const TRLWE<P> &trlwe,
-                                     const TRGSWNTT<P> &trgswntt)
-{
-    DecomposedPolynomial<P> decpoly;
-    Decomposition<P>(decpoly, trlwe[0]);
-    PolynomialNTT<P> decpolyntt;
-    TwistINTT<P>(decpolyntt, decpoly[0]);
-    TRLWENTT<P> restrlwentt;
-    for (int m = 0; m < P::k + 1; m++)
-#ifdef USE_HEXL1
-        intel::hexl::EltwiseMultMod(&(restrlwentt[m][0].value),
-                                    &(decpolyntt[0].value),
-                                    &(trgswntt[0][m][0].value), P::n, lvl1P, 1);
-#else
-        for (int i = 0; i < P::n; i++)
-            restrlwentt[m][i] = decpolyntt[i] * trgswntt[0][m][i];
-#endif
-    for (int i = 1; i < P::l; i++) {
-        TwistINTT<P>(decpolyntt, decpoly[i]);
-        for (int m = 0; m < P::k + 1; m++)
-#ifdef USE_HEXL1
-        {
-            std::array<uint64_t, TFHEpp::lvl1param::n> temp;
-            intel::hexl::EltwiseMultMod(temp.data(), &(decpolyntt[0].value),
-                                        &(trgswntt[i][m][0].value), P::n, lvl1P,
-                                        1);
-            intel::hexl::EltwiseAddMod(&(restrlwentt[m][0].value),
-                                       &(restrlwentt[m][0].value), temp.data(),
-                                       P::n, lvl1P);
-        }
-#else
-            for (int j = 0; j < P::n; j++)
-                restrlwentt[m][j] += decpolyntt[j] * trgswntt[i][m][j];
-#endif
-    }
-    for (int k = 1; k < P::k + 1; k++) {
-        Decomposition<P>(decpoly, trlwe[k]);
-        for (int i = 0; i < P::l; i++) {
-            TwistINTT<P>(decpolyntt, decpoly[i]);
-            for (int m = 0; m < P::k + 1; m++)
-#ifdef USE_HEXL1
-            {
-                std::array<uint64_t, TFHEpp::lvl1param::n> temp;
-                intel::hexl::EltwiseMultMod(
-                    temp.data(), &(decpolyntt[0].value),
-                    &(trgswntt[i + k * P::l][m][0].value), P::n, lvl1P, 1);
-                intel::hexl::EltwiseAddMod(&(restrlwentt[m][0].value),
-                                           &(restrlwentt[m][0].value),
-                                           temp.data(), P::n, lvl1P);
-            }
-#else
-                for (int j = 0; j < P::n; j++)
-                    restrlwentt[m][j] +=
-                        decpolyntt[j] * trgswntt[i + k * P::l][m][j];
-#endif
-        }
-    }
-    for (int k = 0; k < P::k + 1; k++) TwistNTT<P>(res[k], restrlwentt[k]);
-}
 
 template <class P>
 void trgswrainttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
