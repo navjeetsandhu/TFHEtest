@@ -46,10 +46,8 @@ namespace hexl {
     template <class P>
     inline void TwistNTT(TFHEpp::Polynomial<P> &res,TFHEpp::PolynomialInHexl<P> &a)
     {
-        if constexpr (std::is_same_v<P, TFHEpp::lvl2param>) {
-            static intel::hexl::NTT ntt(TFHEpp::lvl2param::n, moduli);
-            compute_inverse(res.data(), a.data(), ntt);
-        }
+        if constexpr (std::is_same_v<P, TFHEpp::lvl2param>)
+            TwistNTT<TFHEpp::lvl2param::n>(res,a);
         else
             static_assert(false_v<typename P::T>, "Undefined TwistNTT!");
     }
@@ -65,10 +63,8 @@ namespace hexl {
     template <class P>
     inline void TwistINTT(TFHEpp::PolynomialInHexl<P> &res, const TFHEpp::Polynomial<P> &a)
     {
-        if constexpr (std::is_same_v<P, TFHEpp::lvl2param>) {
-            static intel::hexl::NTT ntt(TFHEpp::lvl2param::n, moduli);
-            compute_forward(res.data(), a.data(), ntt);
-        }
+        if constexpr (std::is_same_v<P, TFHEpp::lvl2param>)
+            TwistINTT<TFHEpp::lvl2param::n>(res,a);
         else
             static_assert(false_v<typename P::T>, "Undefined TwistINTT!");
     }
