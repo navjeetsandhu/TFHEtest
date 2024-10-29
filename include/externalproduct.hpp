@@ -73,29 +73,29 @@ void trgswnttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
 
 template <class P>
 void trgswHexlExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
-                                     const TRGSWNTT<P> &trgswntt)
+                                     const TRGSWHexl<P> &trgswhexl)
 {
     DecomposedPolynomial<P> decpoly;
     Decomposition<P>(decpoly, trlwe[0]);
-    PolynomialNTT<P> decpolyntt;
-    TwistINTT<P>(decpolyntt, decpoly[0]);
-    TRLWENTT<P> restrlwentt;
+    PolynomialInHexl<P> decpolyhexl;
+    hexl::TwistINTT<P>(decpolyhexl, decpoly[0]);
+    TRLWEInHexl<P> restrlwehexl;
     for (int m = 0; m < P::k + 1; m++)
 
-        hexl::eltwise_mult_mod(&(restrlwentt[m][0].value),
-                                    &(decpolyntt[0].value),
-                                    &(trgswntt[0][m][0].value), P::n);
+        hexl::eltwise_mult_mod(&(restrlwehexl[m][0].value),
+                                    &(decpolyhexl[0].value),
+                                    &(trgswhexl[0][m][0].value), P::n);
 
     for (int i = 1; i < P::l; i++) {
-        TwistINTT<P>(decpolyntt, decpoly[i]);
+        hexl::TwistINTT<P>(decpolyhexl, decpoly[i]);
         for (int m = 0; m < P::k + 1; m++)
 
         {
             std::array<uint64_t, hexl_params_n> temp{};
-            hexl::eltwise_mult_mod(temp.data(), &(decpolyntt[0].value),
-                                        &(trgswntt[i][m][0].value), P::n);
-            hexl::eltwise_add_mod(&(restrlwentt[m][0].value),
-                                       &(restrlwentt[m][0].value), temp.data(),
+            hexl::eltwise_mult_mod(temp.data(), &(decpolyhexl[0].value),
+                                        &(trgswhexl[i][m][0].value), P::n);
+            hexl::eltwise_add_mod(&(restrlwehexl[m][0].value),
+                                       &(restrlwehexl[m][0].value), temp.data(),
                                        P::n);
         }
 
@@ -103,21 +103,20 @@ void trgswHexlExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
     for (int k = 1; k < P::k + 1; k++) {
         Decomposition<P>(decpoly, trlwe[k]);
         for (int i = 0; i < P::l; i++) {
-            TwistINTT<P>(decpolyntt, decpoly[i]);
+            hexl::TwistINTT<P>(decpolyhexl, decpoly[i]);
             for (int m = 0; m < P::k + 1; m++)
             {
                 std::array<uint64_t, hexl_params_n> temp{};
                 hexl::eltwise_mult_mod(
-                    temp.data(), &(decpolyntt[0].value),
-                    &(trgswntt[i + k * P::l][m][0].value), P::n, lvl1P, 1);
-                hexl::eltwise_add_mod(&(restrlwentt[m][0].value),
-                                           &(restrlwentt[m][0].value),
+                    temp.data(), &(decpolyhexl[0].value),
+                    &(trgswhexl[i + k * P::l][m][0].value), P::n);
+                hexl::eltwise_add_mod(&(restrlwehexl[m][0].value),
+                                           &(restrlwehexl[m][0].value),
                                            temp.data(), P::n);
             }
-
         }
     }
-    for (int k = 0; k < P::k + 1; k++) TwistNTT<P>(res[k], restrlwentt[k]);
+    for (int k = 0; k < P::k + 1; k++) hexl::TwistNTT<P>(res[k], restrlwehexl[k]);
 }
 
 

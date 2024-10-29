@@ -4,6 +4,8 @@
 
 namespace hexl {
     static constexpr uint64_t moduli = 4611686018427365377ULL;
+    template <typename T>
+    constexpr bool false_v = false;
 
     inline void compute_inverse(uint64_t *result,
                                 const uint64_t *operand,
@@ -41,12 +43,36 @@ namespace hexl {
         compute_inverse(res.data(), a.data(), ntt);
     }
 
+    template <class P>
+    inline void TwistNTT(TFHEpp::Polynomial<P> &res,TFHEpp::PolynomialInHexl<P> &a)
+    {
+        if constexpr (std::is_same_v<P, TFHEpp::lvl2param>) {
+            static intel::hexl::NTT ntt(TFHEpp::lvl2param::n, moduli);
+            compute_inverse(res.data(), a.data(), ntt);
+        }
+        else
+            static_assert(false_v<typename P::T>, "Undefined TwistNTT!");
+    }
+
+
     template<int N>
     inline void TwistINTT(std::array<uint64_t, N> &res,
                           const std::array<uint64_t, N> &a) {
         static intel::hexl::NTT ntt(N, moduli);
         compute_forward(res.data(), a.data(), ntt);
     }
+
+    template <class P>
+    inline void TwistINTT(TFHEpp::PolynomialInHexl<P> &res, const TFHEpp::Polynomial<P> &a)
+    {
+        if constexpr (std::is_same_v<P, TFHEpp::lvl2param>) {
+            static intel::hexl::NTT ntt(TFHEpp::lvl2param::n, moduli);
+            compute_forward(res.data(), a.data(), ntt);
+        }
+        else
+            static_assert(false_v<typename P::T>, "Undefined TwistINTT!");
+    }
+
 
     template<int N>
     inline void PolyMulNTT(std::array<uint64_t, N> &res,
@@ -59,4 +85,5 @@ namespace hexl {
         eltwise_mult_mod(nttc.data(), ntta.data(), nttb.data(), N, moduli);
         TwistNTT<N>(res, nttc);
     }
+
 }

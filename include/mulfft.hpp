@@ -2,10 +2,6 @@
 #include <memory>
 #include "INTorus.hpp"
 #include <fft_processor_spqlios.h>
-
-#ifdef USE_HEXL1
-#include "hexl/hexl.hpp"
-#endif
 #include "params/hexl_params.hpp"
 #include "cuhe++.hpp"
 #include "params.hpp"
@@ -31,37 +27,17 @@ namespace TFHEpp {
             std::array<std::array<std::array<raintt::SWord, lvl1param::n>, 2>, 2>>
             raintttable = raintt::TableGen<lvl1param::nbit>();
 
-    constexpr uint64_t lvl1P = hexl_params_moduli;
 
-template<class P>
-inline void HexlComputeInverse(Polynomial<P> &res, PolynomialNTT<P> &a,
-                           std::uint32_t n = lvl1param::n,
-                           uint64_t moduli = lvl1P)
-{
-    // std::cout << "@";
-    std::array<uint64_t, lvl1param::n> temp{};
-#ifdef USE_HEXL1
-    static intel::hexl::NTT nttlvl1(lvl1param::n, lvl1P);
-    nttlvl1.ComputeInverse(temp.data(), &(a[0].value), 1, 1);
-#endif
-     for (int i = 0; i < lvl1param::n; i++) res[i] = temp[i];
-}
 
 template <class P>
 inline void TwistNTT(Polynomial<P> &res, PolynomialNTT<P> &a)
 {
     if constexpr (std::is_same_v<P, lvl1param>)
-#ifdef USE_HEXL1
-        HexlComputeInverse<P>(res,a);
-#else
         cuHEpp::TwistNTT<typename lvl1param::T, lvl1param::nbit>(
             res, a, (*ntttablelvl1)[0], (*ntttwistlvl1)[0]);
-#endif
-    else if constexpr (std::is_same_v<typename P::T, uint64_t>) {
-  //      std::cout << "&";
+    else if constexpr (std::is_same_v<typename P::T, uint64_t>)
         cuHEpp::TwistNTT<typename lvl2param::T, lvl2param::nbit>(
             res, a, (*ntttablelvl2)[0], (*ntttwistlvl2)[0]);
-    }
     else
         static_assert(false_v<typename P::T>, "Undefined TwistNTT!");
 }
@@ -72,9 +48,6 @@ inline void TwistFFT(Polynomial<P> &res, const PolynomialInFD<P> &a)
 {
     if constexpr (std::is_same_v<P, lvl1param>) {
         if constexpr (std::is_same_v<typename P::T, uint32_t>)
-            // if constexpr(hasq<P>)
-            // fftplvl1.execute_direct_torus32_q(res.data(), a.data(), P::q);
-            // else
             fftplvl1.execute_direct_torus32(res.data(), a.data());
         if constexpr (std::is_same_v<typename P::T, uint64_t>)
             fftplvl1.execute_direct_torus64(res.data(), a.data());
@@ -101,36 +74,17 @@ inline void TwistFFTrescale(Polynomial<P> &res, const PolynomialInFD<P> &a)
         static_assert(false_v<typename P::T>, "Undefined TwistFFT!");
 }
 
-template <class P>
-inline void HexlComputeForward(PolynomialNTT<P> &res, const Polynomial<P> &a,
-                               std::uint32_t n = lvl1param::n,
-                               uint64_t moduli = lvl1P)
-{
 
-        //std::cout << "*";
-    std::array<uint64_t, lvl1param::n> temp{};
-    for (int i = 0; i < n; i++) temp[i] = a[i];
-#ifdef USE_HEXL1
-    static intel::hexl::NTT nttlvl1(n, moduli);
-    nttlvl1.ComputeForward(&(res[0].value), temp.data(), 1, 1);
-#endif
-}
 
 template <class P>
 inline void TwistINTT(PolynomialNTT<P> &res, const Polynomial<P> &a)
 {
     if constexpr (std::is_same_v<P, lvl1param>)
-#ifdef USE_HEXL1
-        HexlComputeForward<P>(res,a);
-#else
         cuHEpp::TwistINTT<typename P::T, P::nbit>(res, a, (*ntttablelvl1)[1],
                                                   (*ntttwistlvl1)[1]);
-#endif
-    else if constexpr (std::is_same_v<typename P::T, uint64_t>) {
-    //    std::cout << "&";
+    else if constexpr (std::is_same_v<typename P::T, uint64_t>)
         cuHEpp::TwistINTT<typename P::T, P::nbit>(res, a, (*ntttablelvl2)[1],
                                                   (*ntttwistlvl2)[1]);
-    }
     else
         static_assert(false_v<typename P::T>, "Undefined TwistINTT!");
 }
@@ -257,8 +211,6 @@ inline void PolyMulRescaleUnsigned(Polynomial<P> &res,
     MulInFD<P::n>(ffta, ffta, fftb);
     TwistFFTrescale<P>(res, ffta);
 }
-
-
 
 template <class P>
 std::unique_ptr<std::array<PolynomialInFD<P>, 2 * P::n>> XaittGen()
