@@ -47,9 +47,9 @@ struct lvl1param {
              // multiplication.
     static constexpr std::uint32_t n = 1 << nbit;  // dimension: 1024
     static constexpr std::uint32_t k = 1;
-    static constexpr std::uint32_t l = 3;
-    static constexpr std::uint32_t Bgbit = 6;
-    static constexpr std::uint32_t Bg = 1 << Bgbit;
+    static constexpr std::uint32_t l = 3; // used for decomposition
+    static constexpr std::uint32_t Bgbit = 6; // used for decomposition
+    static constexpr std::uint32_t Bg = 1 << Bgbit;  // 64: for decomposition
     static constexpr ErrorDistribution errordist =
         ErrorDistribution::ModularGaussian;
     static const inline double alpha = std::pow(2.0, -25);  // Gaussian fresh noise 2^{-25}, stdev
@@ -68,7 +68,7 @@ struct lvl2param {
     static constexpr std::uint32_t nbit = hexl_params_nbit;
     static constexpr std::uint32_t n = hexl_params_n;
     static constexpr std::uint32_t k = 1;
-    static constexpr std::uint32_t l = 4;
+    static constexpr std::uint32_t l = 4; // used for decomposition
     static constexpr std::uint32_t Bgbit = 9;   // used for decomposition of polynomial
     static constexpr std::uint32_t Bg = 1 << Bgbit;  //512
     static constexpr ErrorDistribution errordist =
