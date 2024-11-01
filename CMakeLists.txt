@@ -53,6 +53,7 @@ if(ENABLE_TEST)
   add_subdirectory(unit_test/encrypt)
   add_subdirectory(unit_test/gate)
   add_subdirectory(unit_test/externalproduct)
+  add_subdirectory(unit_test/decomposition)
   add_subdirectory(unit_test/bootstrapping)
 endif()
 

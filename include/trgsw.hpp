@@ -10,21 +10,6 @@
 namespace TFHEpp {
 
 template <class P>
-constexpr std::array<typename P::T, P::l> hgen()
-{
-    std::array<typename P::T, P::l> h{};
-    if constexpr (hasq<P>::value)
-        for (int i = 0; i < P::l; i++)
-            h[i] = (P::q + (1ULL << ((i + 1) * P::Bgbit - 1))) >>
-                   ((i + 1) * P::Bgbit);
-    else
-        for (int i = 0; i < P::l; i++)
-            h[i] = 1ULL << (std::numeric_limits<typename P::T>::digits -
-                            (i + 1) * P::Bgbit);
-    return h;
-}
-
-template <class P>
 TRGSWFFT<P> ApplyFFT2trgsw(const TRGSW<P> &trgsw)
 {
     alignas(64) TRGSWFFT<P> trgswfft;
