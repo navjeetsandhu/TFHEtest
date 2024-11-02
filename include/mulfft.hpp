@@ -2,7 +2,6 @@
 #include <memory>
 #include "INTorus.hpp"
 #include <fft_processor_spqlios.h>
-#include "params/hexl_params.hpp"
 #include "cuhe++.hpp"
 #include "params.hpp"
 #include "utils.hpp"

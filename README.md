@@ -2,7 +2,7 @@
 TFHEpp is full Scracthed pure C++ Ver. of TFHE. TFHEpp is slightly(about 10%) faster than original [TFHE implementation](https://github.com/tfhe/tfhe). 
 
 # Building
-bash hexl_build.sh
+bash build.sh
 
 # Supported Compiler
 GCC9.1 later are primarily supported compilers.
