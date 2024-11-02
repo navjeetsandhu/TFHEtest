@@ -1,10 +1,15 @@
 #pragma once
 #include <memory>
 #include "INTorus.hpp"
-#include <fft_processor_spqlios.h>
 #include "cuhe++.hpp"
 #include "params.hpp"
 #include "utils.hpp"
+#ifdef USE_FFTW3
+#include <fft_processor_fftw.h>
+#else
+#include <fft_processor_spqlios.h>
+#endif
+
 
 namespace TFHEpp {
     inline const std::unique_ptr<
