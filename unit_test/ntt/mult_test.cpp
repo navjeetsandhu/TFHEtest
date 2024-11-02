@@ -1,6 +1,5 @@
 #include "mult_fft.hpp"
 #include "mult_ntt_cuhe.hpp"
-#include "mult_ntt_hexl.hpp"
 #include"utils2.hpp"
 #include <numeric>
 #include <cmath>
@@ -28,12 +27,6 @@ void test_mult(const std::array<uint64_t, 1 << nbits>& p1, const std::array<uint
     string_msg = "cuHE NTT 64 bit Multiplication";
     print_results<int64_t>(string_msg,  reinterpret_cast<int64_t*>(result.data()), result.size());
 
-    std::array<int64_t, N> resultP = {};
-    std::fill(result.begin(), result.end(), 0);
-    hexl::PolyMulNTT<N>(result, p1, p2);
-    string_msg = "hexl NTT 64 bit Multiplication with mod=4611686018427365377ULL and N="+ std::to_string(N);
-    to_int64_t<N>(resultP, result,4611686018427365377ULL);
-    print_results<int64_t>(string_msg,  resultP.data(), resultP.size());
 }
 
 template <int nbits>
