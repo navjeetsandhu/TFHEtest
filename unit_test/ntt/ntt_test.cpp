@@ -1,12 +1,7 @@
-#include<iostream>
+
 #include <numeric>
 #include "mult_fft.hpp"
 #include"utils2.hpp"
-
-std::unique_ptr<intel::hexl::NTT> create_ntt(uint64_t N, uint64_t modulus) {
-    auto ntt = std::make_unique<intel::hexl::NTT>(N, modulus);
-    return ntt;
-}
 
 
 template <int N>
@@ -20,7 +15,6 @@ void test_mult(const std::array<uint64_t, N>& p1, const std::array<uint64_t, N>&
     print_results<int64_t>(string_msg, reinterpret_cast<int64_t *>(result.data()), result.size());
 
 }
-
 
 template<int N>
 void test_mult()

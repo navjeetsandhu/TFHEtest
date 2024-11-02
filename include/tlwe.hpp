@@ -21,8 +21,7 @@ TLWE<P> tlweSymEncrypt(const typename P::T p, const double alpha, const Key<P> &
                                    //  for lvl1param k = 1 and n = 1024 ,
     int last_index = P::k * P::n;  //  for lvl1param last_index = 1024
     int k, i, j;
-    constexpr auto numeric_limits = std::numeric_limits<typename P::T>::max() > hexl_params_moduli
-                                        ? hexl_params_moduli - 1 : std::numeric_limits<typename P::T>::max();
+    constexpr auto numeric_limits = std::numeric_limits<typename P::T>::max();
     
     //This is for mask coefficients
     std::uniform_int_distribution<typename P::T> Torusdist(0,numeric_limits);

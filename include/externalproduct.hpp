@@ -2,12 +2,11 @@
 
 #include <array>
 #include <cstdint>
-
 #include "mulfft.hpp"
 #include "params.hpp"
 #include "trlwe.hpp"
 #include "decomposition.hpp"
-#include "mult_ntt_hexl.hpp"
+
 
 namespace TFHEpp {
 
@@ -69,56 +68,6 @@ void trgswnttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
     }
     for (int k = 0; k < P::k + 1; k++) TwistNTT<P>(res[k], restrlwentt[k]);
 }
-
-
-template <class P>
-void trgswHexlExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
-                                     const TRGSW<P> &trgswhexl)
-{
-    DecomposedPolynomial<P> decpoly;
-    Decomposition<P>(decpoly, trlwe[0]);
-    Polynomial<P> decpolyhexl;
-    hexl::TwistINTT<P>(decpolyhexl, decpoly[0]);
-    TRLWE<P> restrlwehexl;
-    for (int m = 0; m < P::k + 1; m++)
-
-        hexl::eltwise_mult_mod(&(restrlwehexl[m][0].value),
-                                    &(decpolyhexl[0].value),
-                                    &(trgswhexl[0][m][0].value), P::n);
-
-    for (int i = 1; i < P::l; i++) {
-        hexl::TwistINTT<P>(decpolyhexl, decpoly[i]);
-        for (int m = 0; m < P::k + 1; m++)
-
-        {
-            std::array<uint64_t, hexl_params_n> temp{};
-            hexl::eltwise_mult_mod(temp.data(), &(decpolyhexl[0].value),
-                                        &(trgswhexl[i][m][0].value), P::n);
-            hexl::eltwise_add_mod(&(restrlwehexl[m][0].value),
-                                       &(restrlwehexl[m][0].value), temp.data(),
-                                       P::n);
-        }
-
-    }
-    for (int k = 1; k < P::k + 1; k++) {
-        Decomposition<P>(decpoly, trlwe[k]);
-        for (int i = 0; i < P::l; i++) {
-            hexl::TwistINTT<P>(decpolyhexl, decpoly[i]);
-            for (int m = 0; m < P::k + 1; m++)
-            {
-                std::array<uint64_t, hexl_params_n> temp{};
-                hexl::eltwise_mult_mod(
-                    temp.data(), &(decpolyhexl[0].value),
-                    &(trgswhexl[i + k * P::l][m][0].value), P::n);
-                hexl::eltwise_add_mod(&(restrlwehexl[m][0].value),
-                                           &(restrlwehexl[m][0].value),
-                                           temp.data(), P::n);
-            }
-        }
-    }
-    for (int k = 0; k < P::k + 1; k++) hexl::TwistNTT<P>(res[k], restrlwehexl[k]);
-}
-
 
 template <class P>
 void trgswrainttExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
