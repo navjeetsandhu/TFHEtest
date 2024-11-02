@@ -1,8 +1,8 @@
-# TFHEpp
-TFHEpp is full Scracthed pure C++ Ver. of TFHE. TFHEpp is slightly(about 10%) faster than original [TFHE implementation](https://github.com/tfhe/tfhe). 
+# TFHEfft
+TFHEfft is full Scracthed pure C++ Ver. of TFHE. 
 
 # Building
-bash build.sh
+bash fftBuild.sh
 
 # Supported Compiler
 GCC9.1 later are primarily supported compilers.
@@ -11,15 +11,16 @@ GCC9.1 later are primarily supported compilers.
 Codes under thirdparties directory contain third-party libraries, Randen, Cereal, and SPQLIOS. See the corresponding directory to check the licenses.
 
 ## Randen
-TFHEpp uses this as a Cryptographically Secure Pseudo-Random Number Generator (CSPRNG). Original repository is [here](https://github.com/google/randen).
-I just removed some unnecessary codes, with no modification.
+TFHEfft uses this as a Cryptographically Secure Pseudo-Random Number Generator (CSPRNG). Original repository is [here](https://github.com/google/randen).
 
 ## Cereal
-cereal is a header-only C++11 serialization library. TFHEpp uses this to export ciphertexts and keys. Cereal is treated by the git submodule.
+Cereal is a header-only C++11 serialization library. TFHEfft uses this to export ciphertexts and keys. Cereal is treated by the git submodule.
+
+# FFTW3
+TFHEfft uses fftw3 by .
 
 ## SPQLIOS
-SPQLIOS is the FFT library using AVX2 that is dedicated to the ring R\[X\]/(X^N+1) for N a power of 2. These codes come from [experimental-tfhe](https://github.com/tfhe/experimental-tfhe/tree/master/circuit-bootstrapping/src/spqlios). We just renamed instances to adapt to our codes.
+SPQLIOS is the FFT library using AVX2 that is dedicated to the ring R\[X\]/(X^N+1) for N a power of 2. 
 
-# FFTW3 Support
-TFHEpp can use fftw3.
+
 
