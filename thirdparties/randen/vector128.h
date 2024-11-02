@@ -16,7 +16,7 @@
 #ifndef VECTOR128_H_
 #define VECTOR128_H_
 
-#include <stdint.h>     // uint64_t
+#include <cstdint>     // uint64_t
 
 #if defined(__SSE2__) && defined(__AES__)
 

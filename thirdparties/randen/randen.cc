@@ -13,9 +13,7 @@
 // limitations under the License.
 
 #include "randen.h"
-
-#include <string.h>     // memcpy
-
+#include <cstring>     // memcpy
 #include "vector128.h"
 
 namespace randen {

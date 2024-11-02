@@ -10,7 +10,7 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 option(USE_RANDEN "Use randen as CSPRNG" ON)
 option(ENABLE_TEST "Build tests" ON)
-
+option(USE_FFTW3 "Use FFTW3" ON)
 
 set(TFHEpp_DEFINITIONS
     ""
@@ -25,8 +25,15 @@ if(USE_RANDEN)
 endif()
 
 
-
-add_subdirectory(thirdparties/spqlios)
+if(USE_FFTW3)
+  set(TFHEpp_DEFINITIONS
+          "${TFHEpp_DEFINITIONS};USE_FFTW3"
+          PARENT_SCOPE)
+  add_compile_definitions(USE_FFTW3)
+  add_subdirectory(thirdparties/fftw)
+else()
+  add_subdirectory(thirdparties/spqlios)
+endif()
 
 # For OpenMP
 find_package(OpenMP)
