@@ -1,5 +1,9 @@
 #include <array>
+#ifdef USE_FFTW3
+#include <fft_processor_fftw.h>
+#else
 #include <fft_processor_spqlios.h>
+#endif
 
 
 template <int N>
