@@ -20,13 +20,6 @@ cereal is a header-only C++11 serialization library. TFHEpp uses this to export 
 ## SPQLIOS
 SPQLIOS is the FFT library using AVX2 that is dedicated to the ring R\[X\]/(X^N+1) for N a power of 2. These codes come from [experimental-tfhe](https://github.com/tfhe/experimental-tfhe/tree/master/circuit-bootstrapping/src/spqlios). We just renamed instances to adapt to our codes.
 
-
-## HEXL
-[HEXL](https://github.com/intel/hexl.git) is the NTT library optimized for AVX512. 
-
-TFHEpp uses the following HEXL limited functionalities in certain scenarios:
-1.	Forward NTT: ComputeForward()
-2.	Inverse NTT: ComputeInverse()
-3.	Elementwise vector multiplication with modular reduction: EltwiseMultMod()
-4.	Elementwise vector addition with modular reduction: EltwiseAddMod()
+# FFTW3 Support
+TFHEpp can use fftw3.
 

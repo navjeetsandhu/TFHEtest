@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS
   )
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
-option(USE_HEXL "Use Intel HEXL" ON)
+
 option(USE_RANDEN "Use randen as CSPRNG" ON)
 option(ENABLE_TEST "Build tests" ON)
 
@@ -24,15 +24,6 @@ if(USE_RANDEN)
   add_subdirectory(thirdparties/randen)
 endif()
 
-if(USE_HEXL)
-  set(hexl-ntt_DEFINITIONS
-          "${hexl-ntt_DEFINITIONS};USE_HEXL"
-          PARENT_SCOPE)
-  add_compile_definitions(USE_HEXL)
-  add_subdirectory(thirdparties/hexl)
-  # set(CMAKE_CXX_FLAGS "-march=native -O3 -g -funroll-loops -Wall -Wextra
-  # -pedantic -Wno-sign-compare -mprefer-vector-width=512" )
-endif()
 
 
 add_subdirectory(thirdparties/spqlios)
