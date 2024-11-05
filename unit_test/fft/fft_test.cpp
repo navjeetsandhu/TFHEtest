@@ -10,9 +10,8 @@ void copyTorusArray(std::array<uint64_t, N>& p1, const std::array<cuHEpp::INToru
         p1[i] = ntt[i].value;
 }
 
-
 template <int nbits>
-void test_fft_ntt(const std::array<uint64_t, 1 << nbits>& p1)
+void test_fft(const std::array<uint64_t, 1 << nbits>& p1)
 {
 
     std::string string_msg = "Input p1";
@@ -20,8 +19,8 @@ void test_fft_ntt(const std::array<uint64_t, 1 << nbits>& p1)
 
     print_results<uint64_t>(string_msg, p1.data(), p1.size());
 
-    std::array<uint64_t, N> result{};
-    std::array<uint64_t, N> result1{};
+    std::array<uint64_t, N> result;
+    std::array<uint64_t, N> result1;
     std::fill(result.begin(), result.end(), 0);
 
     alignas(64) std::array<double, N> fft{};
@@ -33,20 +32,11 @@ void test_fft_ntt(const std::array<uint64_t, 1 << nbits>& p1)
     TwistFFT<N>(result, fft);
     string_msg = "TwistFFT 64 bit";
     print_results<int64_t>(string_msg,  reinterpret_cast<int64_t*>(result.data()), result.size());
-
-    std::array<cuHEpp::INTorus, N> ntt;
-    cuHEpp::TwistINTT<uint64_t, nbits>(ntt, p1);
-    copyTorusArray<N>(result1, ntt);
-    string_msg = "cuHE TwistINTT 64 bit";
-    print_results<int64_t>(string_msg,  reinterpret_cast<int64_t*>(result1.data()), result1.size());
-    std::fill(result.begin(), result.end(), 0);
-    cuHEpp::TwistNTT<uint64_t, nbits>(result, ntt);
-    string_msg = "cuHE TwistNTT 64 bit";
-    print_results<int64_t>(string_msg,  reinterpret_cast<int64_t*>(result.data()), result.size());
 }
 
+
 template <int nbits>
-void test_fft_ntt(const std::array<uint32_t, 1 << nbits>& p1)
+void test_fft(const std::array<uint32_t, 1 << nbits>& p1)
 {
 
     std::string string_msg = "Input p1";
@@ -54,8 +44,8 @@ void test_fft_ntt(const std::array<uint32_t, 1 << nbits>& p1)
 
     print_results<uint32_t>(string_msg, p1.data(), p1.size());
 
-    std::array<uint32_t, N> result{};
-    std::array<uint64_t, N> result1{};
+    std::array<uint32_t, N> result;
+    std::array<uint64_t, N> result1;
     std::fill(result.begin(), result.end(), 0);
 
     alignas(64) std::array<double, N> fft{};
@@ -68,15 +58,6 @@ void test_fft_ntt(const std::array<uint32_t, 1 << nbits>& p1)
     string_msg = "TwistFFT 32 bit";
     print_results<int32_t>(string_msg,  reinterpret_cast<int32_t*>(result.data()), result.size());
 
-    std::array<cuHEpp::INTorus, N> ntt;
-    cuHEpp::TwistINTT<uint32_t, nbits>(ntt, p1);
-    copyTorusArray<N>(result1, ntt);
-    string_msg = "cuHE TwistINTT 32 bit";
-    print_results<int64_t>(string_msg,  reinterpret_cast<int64_t*>(result1.data()), result1.size());
-    std::fill(result.begin(), result.end(), 0);
-    cuHEpp::TwistNTT<uint32_t, nbits>(result, ntt);
-    string_msg = "cuHE TwistNTT 32 bit";
-    print_results<int32_t>(string_msg,  reinterpret_cast<int32_t*>(result.data()), result.size());
 }
 
 
@@ -89,13 +70,13 @@ void test_fft_ntt()
     std::array<P,  N> p1{};
     std::array<P,  N> p2{};
     std::iota(p1.begin(), p1.end(), 1);
-    test_fft_ntt<nbits>(p1);
+    test_fft<nbits>(p1);
 }
 
 int main()
 {
     constexpr int nbit = 6;
     test_fft_ntt<uint32_t,nbit>();
-    test_fft_ntt<uint64_t, nbit>();
+    test_fft_ntt<uint64_t,nbit>();
     return 0;
 }
