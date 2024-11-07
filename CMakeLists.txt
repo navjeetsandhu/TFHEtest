@@ -11,6 +11,7 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 option(USE_RANDEN "Use randen as CSPRNG" ON)
 option(ENABLE_TEST "Build tests" ON)
 option(USE_FFTW3 "Use FFTW3" ON)
+option(USE_FPGA "Use FPGA" ON)
 
 set(TFHEpp_DEFINITIONS
     ""
@@ -34,6 +35,16 @@ if(USE_FFTW3)
 else()
   add_subdirectory(thirdparties/spqlios)
 endif()
+
+if(USE_FPGA)
+  set(TFHEpp_DEFINITIONS
+          "${TFHEpp_DEFINITIONS};USE_FPGA"
+          PARENT_SCOPE)
+  add_compile_definitions(USE_FPGA)
+  add_subdirectory(thirdparties/fpga)
+  find_package(IntelFPGAOpenCL REQUIRED)
+endif()
+
 
 # For OpenMP
 find_package(OpenMP)
