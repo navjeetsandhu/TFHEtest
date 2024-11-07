@@ -42,6 +42,9 @@ if(USE_FPGA)
           PARENT_SCOPE)
   add_compile_definitions(USE_FPGA)
   add_subdirectory(thirdparties/fpga)
+  # build external dependencies
+  message("-- Building external dependencies")
+  include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/extDep.cmake)
   find_package(IntelFPGAOpenCL REQUIRED)
 endif()
 
