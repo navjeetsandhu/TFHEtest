@@ -55,15 +55,15 @@ void fft_data_test(const unsigned num)
     float2 *out2 = new float2[num]();
     create_data(num, inp);
 
-    bool inv = false;
+    bool inv = true;
     cout << endl << "inv: " << inv << endl;
-    fpga_timing timing = fpga_fft(num, inp, out1, false);
+    fpga_timing timing = fpga_fft(num, inp, out1, inv);
     cout << timing;
     print_fft_fpga_data(num, inp, out1);
 
-    inv = true;
+    inv = false;
     cout << endl << "inv: " << inv << endl;
-    timing = fpga_fft(num, out1, out2, false);
+    timing = fpga_fft(num, out1, out2, inv);
     cout << timing;
     print_fft_fpga_data(num, out1, out2);
 
