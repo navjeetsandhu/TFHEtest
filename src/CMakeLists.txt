@@ -34,4 +34,5 @@ if(USE_FPGA)
           IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/thirdparties/fpga/libs/fftfpga/libfftfpga.a"
   )
   target_link_libraries(tfhe++ INTERFACE fpgaLibrary)
+  target_link_libraries(tfhe++ INTERFACE fpgaproc)
 endif()
