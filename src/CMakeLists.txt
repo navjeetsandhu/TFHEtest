@@ -33,6 +33,5 @@ if(USE_FPGA)
   set_target_properties(fpgaLibrary PROPERTIES
           IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/thirdparties/fpga/libs/fftfpga/libfftfpga.a"
   )
-
-  target_link_libraries(tfhe++ fpgaLibrary)
+  target_link_libraries(tfhe++ INTERFACE fpgaLibrary)
 endif()
