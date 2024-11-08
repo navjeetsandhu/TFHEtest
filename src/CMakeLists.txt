@@ -25,3 +25,14 @@ if(USE_FFTW3)
 else()
   target_link_libraries(tfhe++ INTERFACE spqlios)
 endif()
+
+
+if(USE_FPGA)
+  target_include_directories(tfhe++ PUBLIC ${PROJECT_SOURCE_DIR}/thirdparties/fpga)
+  add_library(fpgaLibrary STATIC IMPORTED)
+  set_target_properties(fpgaLibrary PROPERTIES
+          IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/thirdparties/fpga/libs/fftfpga/libfftfpga.a"
+  )
+
+  target_link_libraries(tfhe++ fpgaLibrary)
+endif()
