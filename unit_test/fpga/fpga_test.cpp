@@ -10,8 +10,18 @@ void init_fpga()
 #endif
 }
 
+void destroy_fpga()
+{
+
+#ifdef USE_FPGA
+    fpga_close();
+#endif
+}
+
+
 int main()
 {
     init_fpga();
+    destroy_fpga();
     return 0;
 }
