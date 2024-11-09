@@ -5,6 +5,7 @@
 #include <complex>
 #include <cstdint>
 #include <vector>
+#include "fftfpga.h"
 
 class FFT_Processor_FPGA {
 public:
@@ -14,9 +15,9 @@ public:
 
 private:
     std::vector<std::complex<double>> twist;
-
-    fftw_complex *inbuf;
-    fftw_complex *outbuf;
+    float2 *inbuf;
+    float2 *outbuf;
+    fpga_t runtime;
 
 public:
     FFT_Processor_FPGA(const int32_t N);
@@ -40,8 +41,4 @@ public:
     ~FFT_Processor_FPGA();
 };
 
-// FFT_Processor_FPGA is thread-safe
-constexpr uint32_t N_FFT = 64;
-extern FFT_Processor_FPGA fftp;
 extern FFT_Processor_FPGA fftplvl1;
-extern FFT_Processor_FPGA fftplvl2;

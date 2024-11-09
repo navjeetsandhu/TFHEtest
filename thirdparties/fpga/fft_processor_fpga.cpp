@@ -1,4 +1,5 @@
 #include "fft_processor_fpga.h"
+#include "fpga.h"
 #include <array>
 #include <cassert>
 #include <cmath>
@@ -12,30 +13,27 @@
 FFT_Processor_FPGA::FFT_Processor_FPGA(const int32_t N)
     : _2N(2 * N), N(N), Ns2(N / 2)
 {
-    inbuf = (fftw_complex *)fftw_malloc(sizeof(fftw_complex) * Ns2);
-    outbuf = (fftw_complex *)fftw_malloc(sizeof(fftw_complex) * Ns2);
-    plan_forward =
-        fftw_plan_dft_1d(Ns2, inbuf, outbuf, FFTW_FORWARD, FFTW_MEASURE);
-    plan_backward =
-        fftw_plan_dft_1d(Ns2, inbuf, outbuf, FFTW_BACKWARD, FFTW_MEASURE);
+    inbuf = new float2[Ns2]();
+    outbuf = new float2[Ns2]();
 
     for (int i = 0; i < Ns2; i++) {
         double value = (double)i * M_PI / (double)N;
         twist.push_back(std::complex<double>(std::cos(value), std::sin(value)));
     }
+    fpga_initialize();
 }
 
 void FFT_Processor_FPGA::execute_reverse_int(double *res, const int32_t *a)
 {
     for (int i = 0; i < Ns2; i++) {
         auto tmp = twist[i] * std::complex((double)a[i], (double)a[Ns2 + i]);
-        inbuf[i][0] = tmp.real();
-        inbuf[i][1] = tmp.imag();
+        inbuf[i].x = tmp.real();
+        inbuf[i].y = tmp.imag();
     }
     fftw_execute_dft(plan_forward, inbuf, outbuf);
     for (int i = 0; i < Ns2; i++) {
-        res[i] = outbuf[i][0];
-        res[i + Ns2] = outbuf[i][1];
+        res[i] = outbuf[i].x;
+        res[i + Ns2] = outbuf[i].y;
     }
 }
 
@@ -49,21 +47,21 @@ void FFT_Processor_FPGA::execute_reverse_torus64(double *res, const uint64_t *a)
     for (int i = 0; i < Ns2; i++) {
         auto tmp = twist[i] * std::complex((double)((int64_t)a[i]),
                                            (double)((int64_t)a[Ns2 + i]));
-        inbuf[i][0] = tmp.real();
-        inbuf[i][1] = tmp.imag();
+        inbuf[i].x = tmp.real();
+        inbuf[i].y = tmp.imag();
     }
     fftw_execute_dft(plan_forward, inbuf, outbuf);
     for (int i = 0; i < Ns2; i++) {
-        res[i] = outbuf[i][0];
-        res[i + Ns2] = outbuf[i][1];
+        res[i] = outbuf[i].x;
+        res[i + Ns2] = outbuf[i].y;
     }
 }
 
 void FFT_Processor_FPGA::execute_direct_torus32(uint32_t *res, const double *a)
 {
     for (int i = 0; i < Ns2; i++) {
-        inbuf[i][0] = a[i] / Ns2;
-        inbuf[i][1] = a[Ns2 + i] / Ns2;
+        inbuf[i].x = a[i] / Ns2;
+        inbuf[i].y  = a[Ns2 + i] / Ns2;
     }
     fftw_execute_dft(plan_backward, inbuf, outbuf);
     for (int i = 0; i < Ns2; i++) {
@@ -79,8 +77,8 @@ void FFT_Processor_FPGA::execute_direct_torus32_rescale(uint32_t *res,
                                                         const double delta)
 {
     for (int i = 0; i < Ns2; i++) {
-        inbuf[i][0] = a[i] / Ns2;
-        inbuf[i][1] = a[Ns2 + i] / Ns2;
+        inbuf[i].x = a[i] / Ns2;
+        inbuf[i].y  = a[Ns2 + i] / Ns2;
     }
     fftw_execute_dft(plan_backward, inbuf, outbuf);
     for (int i = 0; i < Ns2; i++) {
@@ -94,8 +92,8 @@ void FFT_Processor_FPGA::execute_direct_torus32_rescale(uint32_t *res,
 void FFT_Processor_FPGA::execute_direct_torus64(uint64_t *res, const double *a)
 {
     for (int i = 0; i < Ns2; i++) {
-        inbuf[i][0] = a[i] / Ns2;
-        inbuf[i][1] = a[Ns2 + i] / Ns2;
+        inbuf[i].x = a[i] / Ns2;
+        inbuf[i].y  = a[Ns2 + i] / Ns2;
     }
     fftw_execute_dft(plan_backward, inbuf, outbuf);
     double tmp[N];
@@ -125,8 +123,8 @@ void FFT_Processor_FPGA::execute_direct_torus64_rescale(uint64_t *res,
                                                         const double delta)
 {
     for (int i = 0; i < Ns2; i++) {
-        inbuf[i][0] = a[i] / Ns2;
-        inbuf[i][1] = a[Ns2 + i] / Ns2;
+        inbuf[i].x = a[i] / Ns2;
+        inbuf[i].y  = a[Ns2 + i] / Ns2;
     }
     fftw_execute_dft(plan_backward, inbuf, outbuf);
     double tmp[N];
@@ -141,12 +139,12 @@ void FFT_Processor_FPGA::execute_direct_torus64_rescale(uint64_t *res,
 
 FFT_Processor_FPGA::~FFT_Processor_FPGA()
 {
-    fftw_destroy_plan(plan_forward);
-    fftw_destroy_plan(plan_backward);
-    fftw_cleanup();
+
+    delete[] inbuf;
+    delete[] outbuf;
+
+    fpga_close();
 }
 
-// FFT_Processor_FPGA is thread-safe
-FFT_Processor_FPGA fftp(N_FFT);
+
 FFT_Processor_FPGA fftplvl1(TFHEpp::lvl1param::n);
-FFT_Processor_FPGA fftplvl2(TFHEpp::lvl2param::n);

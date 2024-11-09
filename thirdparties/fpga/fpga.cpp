@@ -4,6 +4,17 @@
 
 using namespace std;
 
+unsigned bit_reversed(unsigned x, const unsigned bits) {
+    unsigned y = 0;
+    for (unsigned i = 0; i < bits; i++) {
+        y <<= 1;
+        y |= x & 1;
+        x >>= 1;
+    }
+    return y;
+}
+
+
 void fpga_initialize() {
     const char* platform = "Intel(R) FPGA Emulation Platform for OpenCL(TM)";
     const char* path = "/home/solana/code/TFHEfft/thirdparties/fpga/libs/aocx/fft1d.aocx";
