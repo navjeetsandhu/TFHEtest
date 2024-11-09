@@ -1,6 +1,6 @@
 #include <iostream>
 #include "fpga.h"
-
+#include <math.h>
 
 using namespace std;
 
@@ -13,6 +13,25 @@ unsigned bit_reversed(unsigned x, const unsigned bits) {
     }
     return y;
 }
+
+void correct_data_order(float2* fpgaOut, const unsigned num)
+{
+    float2* tmp = new float2[num]();
+    unsigned log_dim = log2(num);
+
+        for(unsigned i = 0; i < num; i++){
+            unsigned bit_rev = bit_reversed(i, log_dim);
+            tmp[i].x = fpgaOut[bit_rev].x;
+            tmp[i].y = fpgaOut[bit_rev].y;
+        }
+
+    for(unsigned i = 0; i < num; i++ ){
+        fpgaOut[i].x = tmp[i].x;
+        fpgaOut[i].y = tmp[i].y;
+    }
+    delete tmp;
+}
+
 
 
 void fpga_initialize() {
@@ -45,6 +64,7 @@ fpga_t fpga_fft(const unsigned num, const float2 *inp, float2 *out, const bool i
 
     try {
         runtime = fftfpgaf_c2c_1d(num, inp, out, inv, 1);
+        correct_data_order(out, num);
     }
     catch(const char* msg){
         cerr << msg << endl;

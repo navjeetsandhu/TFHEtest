@@ -1,12 +1,11 @@
 #include "fft_processor_fpga.h"
 #include "fpga.h"
 #include <array>
-#include <cassert>
 #include <cmath>
 #include <complex>
 #include <cstdint>
 #include <params.hpp>
-#include <vector>
+
 
 #define CAST_DOUBLE_TO_UINT32(d) ((uint32_t)((int64_t)(d)))
 
@@ -30,7 +29,7 @@ void FFT_Processor_FPGA::execute_reverse_int(double *res, const int32_t *a)
         inbuf[i].x = tmp.real();
         inbuf[i].y = tmp.imag();
     }
-    fftw_execute_dft(plan_forward, inbuf, outbuf);
+    runTimeRc = fpga_fft(Ns2, inbuf, outbuf, false);
     for (int i = 0; i < Ns2; i++) {
         res[i] = outbuf[i].x;
         res[i + Ns2] = outbuf[i].y;
@@ -50,7 +49,7 @@ void FFT_Processor_FPGA::execute_reverse_torus64(double *res, const uint64_t *a)
         inbuf[i].x = tmp.real();
         inbuf[i].y = tmp.imag();
     }
-    fftw_execute_dft(plan_forward, inbuf, outbuf);
+    runTimeRc = fpga_fft(Ns2, inbuf, outbuf, false);
     for (int i = 0; i < Ns2; i++) {
         res[i] = outbuf[i].x;
         res[i + Ns2] = outbuf[i].y;
@@ -63,9 +62,9 @@ void FFT_Processor_FPGA::execute_direct_torus32(uint32_t *res, const double *a)
         inbuf[i].x = a[i] / Ns2;
         inbuf[i].y  = a[Ns2 + i] / Ns2;
     }
-    fftw_execute_dft(plan_backward, inbuf, outbuf);
+    runTimeRc = fpga_fft(Ns2, inbuf, outbuf, true);
     for (int i = 0; i < Ns2; i++) {
-        auto res_tmp = std::complex<double>(outbuf[i][0], outbuf[i][1]) *
+        auto res_tmp = std::complex<double>(outbuf[i].x, outbuf[i].y) *
                        std::conj(twist[i]);
         res[i] = CAST_DOUBLE_TO_UINT32(res_tmp.real());
         res[i + Ns2] = CAST_DOUBLE_TO_UINT32(res_tmp.imag());
@@ -80,9 +79,9 @@ void FFT_Processor_FPGA::execute_direct_torus32_rescale(uint32_t *res,
         inbuf[i].x = a[i] / Ns2;
         inbuf[i].y  = a[Ns2 + i] / Ns2;
     }
-    fftw_execute_dft(plan_backward, inbuf, outbuf);
+    runTimeRc = fpga_fft(Ns2, inbuf, outbuf, true);
     for (int i = 0; i < Ns2; i++) {
-        auto res_tmp = std::complex<double>(outbuf[i][0], outbuf[i][1]) *
+        auto res_tmp = std::complex<double>(outbuf[i].x , outbuf[i].y) *
                        std::conj(twist[i]);
         res[i] = CAST_DOUBLE_TO_UINT32(res_tmp.real() / (delta / 4));
         res[i + Ns2] = CAST_DOUBLE_TO_UINT32(res_tmp.imag() / (delta / 4));
@@ -95,10 +94,10 @@ void FFT_Processor_FPGA::execute_direct_torus64(uint64_t *res, const double *a)
         inbuf[i].x = a[i] / Ns2;
         inbuf[i].y  = a[Ns2 + i] / Ns2;
     }
-    fftw_execute_dft(plan_backward, inbuf, outbuf);
+    runTimeRc = fpga_fft(Ns2, inbuf, outbuf, true);
     double tmp[N];
     for (int i = 0; i < Ns2; i++) {
-        auto res_tmp = std::complex<double>(outbuf[i][0], outbuf[i][1]) *
+        auto res_tmp = std::complex<double>(outbuf[i].x, outbuf[i].y) *
                        std::conj(twist[i]);
         tmp[i] = res_tmp.real();
         tmp[i + Ns2] = res_tmp.imag();
@@ -126,10 +125,10 @@ void FFT_Processor_FPGA::execute_direct_torus64_rescale(uint64_t *res,
         inbuf[i].x = a[i] / Ns2;
         inbuf[i].y  = a[Ns2 + i] / Ns2;
     }
-    fftw_execute_dft(plan_backward, inbuf, outbuf);
+    runTimeRc = fpga_fft(Ns2, inbuf, outbuf, true);
     double tmp[N];
     for (int i = 0; i < Ns2; i++) {
-        auto res_tmp = std::complex<double>(outbuf[i][0], outbuf[i][1]) *
+        auto res_tmp = std::complex<double>(outbuf[i].x, outbuf[i].y) *
                        std::conj(twist[i]);
         tmp[i] = res_tmp.real();
         tmp[i + Ns2] = res_tmp.imag();

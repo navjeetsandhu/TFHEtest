@@ -17,7 +17,7 @@ private:
     std::vector<std::complex<double>> twist;
     float2 *inbuf;
     float2 *outbuf;
-    fpga_t runtime;
+    fpga_t runTimeRc;
 
 public:
     FFT_Processor_FPGA(const int32_t N);
