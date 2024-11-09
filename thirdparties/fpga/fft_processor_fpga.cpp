@@ -146,4 +146,4 @@ FFT_Processor_FPGA::~FFT_Processor_FPGA()
 }
 
 
-FFT_Processor_FPGA fftplvl1(TFHEpp::lvl1param::n);
+FFT_Processor_FPGA fftpFpgaLvl1(TFHEpp::lvl1param::n);
