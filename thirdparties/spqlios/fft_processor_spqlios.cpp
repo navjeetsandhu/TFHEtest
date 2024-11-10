@@ -19,6 +19,7 @@ int32_t rev(int32_t x, int32_t M) {
 }
 
 FFT_Processor_Spqlios::FFT_Processor_Spqlios(const int32_t N) : _2N(2 * N), N(N), Ns2(N / 2) {
+    //std:: cout << " Ns2: " << Ns2 << std::endl;
     tables_direct = new_fft_table(N);
     tables_reverse = new_ifft_table(N);
     real_inout_direct = fft_table_get_buffer(tables_direct);
@@ -253,6 +254,5 @@ FFT_Processor_Spqlios::~FFT_Processor_Spqlios() {
     delete (tables_reverse);
     delete[] cosomegaxminus1;
 }
-thread_local FFT_Processor_Spqlios fftp(N_FFT);
 thread_local FFT_Processor_Spqlios fftplvl1(TFHEpp::lvl1param::n);
 thread_local FFT_Processor_Spqlios fftplvl2(TFHEpp::lvl2param::n);

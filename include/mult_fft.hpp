@@ -9,25 +9,25 @@
 template <int N>
 inline void TwistFFT(std::array<uint64_t, N> &res, const std::array<double, N> &a)
 {
-    fftp.execute_direct_torus64(res.data(), a.data());
+    fftplvl1.execute_direct_torus64(res.data(), a.data());
 }
 
 template <int N>
 inline void TwistFFT(std::array<uint32_t, N> &res, const std::array<double, N> &a)
 {
-    fftp.execute_direct_torus32(res.data(), a.data());
+    fftplvl1.execute_direct_torus32(res.data(), a.data());
 }
 
 template <int N>
 inline void TwistIFFT(std::array<double, N> &res, const std::array<uint64_t, N> &a)
 {
-    fftp.execute_reverse_torus64(res.data(), a.data());
+    fftplvl1.execute_reverse_torus64(res.data(), a.data());
 }
 
 template <int N>
 inline void TwistIFFT(std::array<double, N> &res, const std::array<uint32_t, N> &a)
 {
-    fftp.execute_reverse_torus32(res.data(), a.data());
+    fftplvl1.execute_reverse_torus32(res.data(), a.data());
 }
 
 template <int N>

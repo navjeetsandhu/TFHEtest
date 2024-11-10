@@ -45,7 +45,5 @@ public:
 };
 
 // FFT_Processor_FFTW is thread-safe
-constexpr uint32_t N_FFT = 64;
-extern FFT_Processor_FFTW fftp;
 extern FFT_Processor_FFTW fftplvl1;
 extern FFT_Processor_FFTW fftplvl2;

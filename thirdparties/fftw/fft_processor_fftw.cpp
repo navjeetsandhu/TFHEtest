@@ -150,6 +150,5 @@ FFT_Processor_FFTW::~FFT_Processor_FFTW()
 }
 
 // FFT_Processor_FFTW is thread-safe
-FFT_Processor_FFTW fftp(N_FFT);
 FFT_Processor_FFTW fftplvl1(TFHEpp::lvl1param::n);
 FFT_Processor_FFTW fftplvl2(TFHEpp::lvl2param::n);

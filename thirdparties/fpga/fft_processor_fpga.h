@@ -41,4 +41,4 @@ public:
     ~FFT_Processor_FPGA();
 };
 
-extern FFT_Processor_FPGA fftplvl1;
+extern FFT_Processor_FPGA fftFpgaLvl1;
