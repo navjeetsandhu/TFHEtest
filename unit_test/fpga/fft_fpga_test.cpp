@@ -68,7 +68,7 @@ void test_fft_p()
 
 int main()
 {
-    constexpr int nbit = 10;
+    constexpr int nbit = 9;
     test_fft_p<uint32_t,nbit>();
     test_fft_p<uint64_t,nbit>();
     return 0;

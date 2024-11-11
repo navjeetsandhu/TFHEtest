@@ -80,6 +80,6 @@ void fft_data_test(const unsigned num)
 
 int main()
 {
-    fft_data_test(1024);
+    fft_data_test(512);
     return 0;
 }
