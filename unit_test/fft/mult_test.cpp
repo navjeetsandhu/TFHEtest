@@ -1,5 +1,5 @@
 #include "mult_fft.hpp"
-#include "mult_ntt_cuhe.hpp"
+#include "mult_fft_fpga.hpp"
 #include"utils2.hpp"
 #include <numeric>
 #include <cmath>
@@ -23,10 +23,9 @@ void test_mult(const std::array<uint64_t, 1 << nbits>& p1, const std::array<uint
     print_results<int64_t>(string_msg,  reinterpret_cast<int64_t*>(result.data()), result.size());
 
     std::fill(result.begin(), result.end(), 0);
-    cuHEpp::PolyMulNTT<uint64_t, nbits>(result, p1, p2);
-    string_msg = "cuHE NTT 64 bit Multiplication";
+    PolyMulFpgaFFT<uint64_t, N>(result, p1, p2);
+    string_msg = "FPGA FFT 64 bit Multiplication";
     print_results<int64_t>(string_msg,  reinterpret_cast<int64_t*>(result.data()), result.size());
-
 }
 
 template <int nbits>
@@ -47,8 +46,8 @@ void test_mult(const std::array<uint32_t, 1 << nbits>& p1, const std::array<uint
     print_results<int32_t>(string_msg,  reinterpret_cast<int32_t*>(result.data()), result.size());
 
     std::fill(result.begin(), result.end(), 0);
-    cuHEpp::PolyMulNTT<uint32_t, nbits>(result, p1, p2);
-    string_msg = "cuHE NTT 32 bit Multiplication";
+    PolyMulFpgaFFT<uint32_t, N>(result, p1, p2);
+    string_msg = "FPGA FFT 32 bit Multiplication";
     print_results<int32_t>(string_msg,  reinterpret_cast<int32_t*>(result.data()), result.size());
 }
 
@@ -67,7 +66,7 @@ void test_mult()
 
 int main()
 {
-    constexpr int nbit = 6;
+    constexpr int nbit = 10;
     test_mult<uint32_t,nbit>();
     test_mult<uint64_t, nbit>();
     return 0;
