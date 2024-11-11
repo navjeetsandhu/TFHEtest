@@ -3,7 +3,7 @@
 #include "mult_fft.hpp"
 #include "INTorus.hpp"
 #include "params.hpp"
-
+#include "utils.hpp"
 #ifdef USE_FPGA
 #include <fft_processor_fpga.h>
 
