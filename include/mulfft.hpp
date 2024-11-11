@@ -59,15 +59,12 @@ inline void TwistFFT(Polynomial<P> &res, const PolynomialInFD<P> &a)
         static_assert(false_v<typename P::T>, "Undefined TwistFFT!");
 }
 
+
 template <class P>
 inline void TwistFFTrescale(Polynomial<P> &res, const PolynomialInFD<P> &a)
 {
-    if constexpr (std::is_same_v<P, lvl1param>) {
-        if constexpr (std::is_same_v<typename P::T, uint32_t>)
-            fftplvl1.execute_direct_torus32_rescale(res.data(), a.data(), P::delta);
-        else if constexpr (std::is_same_v<typename P::T, uint64_t>)
-            fftplvl1.execute_direct_torus64_rescale(res.data(), a.data(), P::delta);
-    }
+    if constexpr (std::is_same_v<P, lvl1param>)
+        TwistFpgaFFTrescale<P>(res, a);
     else if constexpr (std::is_same_v<P, lvl2param>)
         fftplvl2.execute_direct_torus64_rescale(res.data(), a.data(), P::delta);
     else
