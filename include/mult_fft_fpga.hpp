@@ -4,7 +4,6 @@
 
 #ifdef USE_FPGA
 #include <fft_processor_fpga.h>
-FFT_Processor_FPGA fftp = fftFpgaLvl1;
 
 template <int N>
 inline void TwistFpgaFFT(std::array<uint64_t, N> &res, const std::array<double, N> &a)
