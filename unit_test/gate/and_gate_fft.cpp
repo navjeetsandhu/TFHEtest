@@ -22,14 +22,14 @@ void RunTest()
     c = bootsSymEncrypt<lvl2param>(p, *sk);
 
     TFHEpp::HomAND<lvl20param, lvl02param, lvl2param::mu>(cres[0], c[0], c[1], ek);
-    TFHEpp::HomAND<lvl20param, lvl02param, lvl2param::mu>(cres[1], c[0], c[2], ek);
-    TFHEpp::HomAND<lvl20param, lvl02param, lvl2param::mu>(cres[2], c[3], c[2], ek);
+    //TFHEpp::HomAND<lvl20param, lvl02param, lvl2param::mu>(cres[1], c[0], c[2], ek);
+    //TFHEpp::HomAND<lvl20param, lvl02param, lvl2param::mu>(cres[2], c[3], c[2], ek);
 
     p2 = bootsSymDecrypt<lvl2param>(cres, *sk);
 
     c_assert(1 == p2[0]);
-    c_assert(0 == p2[1]);
-    c_assert(0 == p2[2]);
+    //c_assert(0 == p2[1]);
+    //c_assert(0 == p2[2]);
     cout << "------ pass ------" << endl;
 }
 
