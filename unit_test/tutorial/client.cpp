@@ -30,7 +30,7 @@ int main()
 
     // get client input
     uint16_t client_input;
-    std::cout << "Type client input (16bit unsigned interger)" << std::endl;
+    std::cout << "Type client input (16bit unsigned integer)" << std::endl;
     std::cin >> client_input;
 
     // encrypt the input

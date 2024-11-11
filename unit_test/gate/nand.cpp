@@ -3,13 +3,27 @@
 #include <iostream>
 #include <random>
 #include <tfhe++.hpp>
+#include <string>
+#include <sstream>
+
 
 using namespace std;
 using namespace TFHEpp;
 
-int main()
+int main(int argc, char* argv[])
 {
-    constexpr uint32_t num_test = 10;
+    uint32_t num_test = 10;
+    for(int i = 0; i < argc; i++) {
+        std::cout << "Argument " << i << " is " << argv[i] << std::endl;
+    }
+
+    if(argc > 1) {
+        std::stringstream str_stream(argv[1]);
+        str_stream >> num_test;
+    }
+
+    cout << "num test: " << num_test << endl;
+
     random_device seed_gen;
     default_random_engine engine(seed_gen());
     uniform_int_distribution<uint32_t> binary(0, 1);
