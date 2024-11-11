@@ -4,30 +4,30 @@
 
 #ifdef USE_FPGA
 #include <fft_processor_fpga.h>
-FFT_Processor_FPGA fftp = fftFpgaLvli;
+FFT_Processor_FPGA fftp = fftFpgaLvl1;
 
 template <int N>
 inline void TwistFpgaFFT(std::array<uint64_t, N> &res, const std::array<double, N> &a)
 {
-    fftFpgaLvli.execute_direct_torus64(res.data(), a.data());
+    fftFpgaLvl1.execute_direct_torus64(res.data(), a.data());
 }
 
 template <int N>
 inline void TwistFpgaFFT(std::array<uint32_t, N> &res, const std::array<double, N> &a)
 {
-    fftFpgaLvli.execute_direct_torus32(res.data(), a.data());
+    fftFpgaLvl1.execute_direct_torus32(res.data(), a.data());
 }
 
 template <int N>
 inline void TwistFpgaIFFT(std::array<double, N> &res, const std::array<uint64_t, N> &a)
 {
-    fftFpgaLvli.execute_reverse_torus64(res.data(), a.data());
+    fftFpgaLvl1.execute_reverse_torus64(res.data(), a.data());
 }
 
 template <int N>
 inline void TwistFpgaIFFT(std::array<double, N> &res, const std::array<uint32_t, N> &a)
 {
-    fftFpgaLvli.execute_reverse_torus32(res.data(), a.data());
+    fftFpgaLvl1.execute_reverse_torus32(res.data(), a.data());
 }
 #else
 
