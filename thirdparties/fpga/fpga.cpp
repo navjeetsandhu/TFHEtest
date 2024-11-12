@@ -40,9 +40,7 @@ void fpga_initialize() {
     const char* platform = "Intel(R) FPGA SDK for OpenCL(TM)";
     std::filesystem::path currentPath(__FILE__);
     std::string str =  currentPath.parent_path().string() + "/libs/aocx/fft1d.aocx";
-    const char* path = str.c_str();
-    int isInit = fpga_initialize(platform, path, false);
-    std::cout << "fft1d.aocx: " << str << std::endl;
+    int isInit = fpga_initialize(platform, str.c_str(), false);
     if(isInit != 0){
         cerr << "FPGA initialization error\n";
     }
