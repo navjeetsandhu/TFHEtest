@@ -48,10 +48,10 @@ inline void TwistFpgaFFTrescale(TFHEpp::Polynomial<P> &res, const TFHEpp::Polyno
 {
     if constexpr (std::is_same_v<P, TFHEpp::lvl1param>) {
         if constexpr (std::is_same_v<typename P::T, uint32_t>)
-            fftFpgaLvl1..execute_direct_torus32_rescale(res.data(), a.data(),
+            fftFpgaLvl1.execute_direct_torus32_rescale(res.data(), a.data(),
                                                     P::delta);
         else if constexpr (std::is_same_v<typename P::T, uint64_t>)
-            fftFpgaLvl1..execute_direct_torus64_rescale(res.data(), a.data(),
+            fftFpgaLvl1.execute_direct_torus64_rescale(res.data(), a.data(),
                                                     P::delta);
         else
             static_assert(TFHEpp::false_v<typename P::T>, "TwistFpgaFFTrescale!");
