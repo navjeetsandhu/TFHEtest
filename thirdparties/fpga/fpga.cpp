@@ -35,7 +35,8 @@ void correct_data_order(float2* fpgaOut, const unsigned num)
 
 
 void fpga_initialize() {
-    const char* platform = "Intel(R) FPGA Emulation Platform for OpenCL(TM)";
+    //const char* platform = "Intel(R) FPGA Emulation Platform for OpenCL(TM)";
+    const char* platform = "Intel(R) FPGA SDK for OpenCL(TM)";
     const char* path = "/home/solana/code/TFHEfft/thirdparties/fpga/libs/aocx/fft1d.aocx";
     int isInit = fpga_initialize(platform, path, false);
     if(isInit != 0){
