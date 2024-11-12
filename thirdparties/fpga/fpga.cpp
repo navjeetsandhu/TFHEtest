@@ -1,6 +1,7 @@
 #include <iostream>
 #include "fpga.h"
 #include <math.h>
+#include <filesystem>
 
 using namespace std;
 
@@ -37,8 +38,11 @@ void correct_data_order(float2* fpgaOut, const unsigned num)
 void fpga_initialize() {
     //const char* platform = "Intel(R) FPGA Emulation Platform for OpenCL(TM)";
     const char* platform = "Intel(R) FPGA SDK for OpenCL(TM)";
-    const char* path = "/home/solana/code/TFHEfft/thirdparties/fpga/libs/aocx/fft1d.aocx";
+    std::filesystem::path currentPath(__FILE__);
+    std::string str =  currentPath.parent_path().string() + "/libs/aocx/fft1d.aocx";
+    const char* path = str.c_str();
     int isInit = fpga_initialize(platform, path, false);
+    std::cout << "fft1d.aocx: " << str << std::endl;
     if(isInit != 0){
         cerr << "FPGA initialization error\n";
     }
