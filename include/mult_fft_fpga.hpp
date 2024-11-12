@@ -59,7 +59,6 @@ inline void TwistFpgaFFTrescale(TFHEpp::Polynomial<P> &res, const TFHEpp::Polyno
     else
         static_assert(TFHEpp::false_v<typename P::T>, "TwistFpgaFFTrescale!!");
 }
-}
 
 #else
 
