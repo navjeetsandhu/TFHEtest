@@ -51,8 +51,6 @@ int main()
         // creates and sets values for a Bootstrapping Key FFT (Fast Fourier Transform)
         // inside our ek. It is based on the secret key sk and parameter set lvl01param.
         ek.emplacebkfft<TFHEpp::lvl01param>(sk);
-        //create and set values for a Bootstrapping Key NTT (Number Theoretic Transform) in ek object.
-        ek.emplacebkntt<TFHEpp::lvl01param>(sk);
 
         //use the secret key sk to create a Level-1 to Level-0 identity key switch key (IKS Key).
         //dentity Key Switching (IKS) are techniques used in homomorphic encryption to translate

@@ -9,16 +9,3 @@ foreach(test_source ${test_sources})
     target_link_libraries(${test_name} tfhe++)
 endforeach(test_source ${test_sources})
 
-# For GMP used in INTorus test
-find_library(gmp NAMES gmp gmpxx)
-
-
-if(APPLE)
-    message("Compiling on macOS")
-else()
-    message("Not compiling on macOS")
-    if(gmp)
-        add_compile_definitions(ENABLE_LSHTEST)
-        target_link_libraries(INTorus gmp)
-    endif()
-endif()

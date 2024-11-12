@@ -1,8 +1,6 @@
 #pragma once
 
-//#include <bits/stdint-uintn.h>
 #include <cstdint>
-
 #include "keyswitch.hpp"
 #include "mulfft.hpp"
 #include "trgsw.hpp"
