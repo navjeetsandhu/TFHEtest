@@ -28,9 +28,7 @@ endif()
 
 
 if(USE_FPGA)
-  target_include_directories(tfhe++ PUBLIC ${PROJECT_SOURCE_DIR}/thirdparties/fftfpga)
-  target_include_directories(tfhe++ PUBLIC ${PROJECT_SOURCE_DIR}/thirdparties/fpga)
-  target_link_libraries(tfhe++ INTERFACE fftfpga)
+  target_include_directories(tfhe++ PUBLIC ${PROJECT_SOURCE_DIR}/thirdparties/fpgaproc)
   target_link_libraries(tfhe++ INTERFACE fpgaproc)
   target_link_libraries(tfhe++ PUBLIC ${IntelFPGAOpenCL_LIBRARIES} m)
 endif()
