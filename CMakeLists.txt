@@ -45,7 +45,8 @@ if(USE_FPGA)
   message("-- Building external dependencies")
   include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/extDep.cmake)
   find_package(IntelFPGAOpenCL REQUIRED)
-  add_subdirectory(thirdparties/fpgaproc)
+  add_subdirectory(thirdparties/fpga)
+  add_subdirectory(thirdparties/fftfpga)
 endif()
 
 
