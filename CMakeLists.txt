@@ -10,8 +10,8 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 option(USE_RANDEN "Use randen as CSPRNG" ON)
 option(ENABLE_TEST "Build tests" ON)
-option(USE_FFTW3 "Use FFTW3" OFF)
-option(USE_FPGA "Use FPGA" OFF)
+option(USE_FFTW3 "Use FFTW3" ON)
+option(USE_FPGA "Use FPGA" ON)
 
 set(TFHEpp_DEFINITIONS
     ""
