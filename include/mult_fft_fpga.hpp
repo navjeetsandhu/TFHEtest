@@ -1,6 +1,7 @@
 #pragma once
 #include <array>
 #include "mult_fft.hpp"
+#include "INTorus.hpp"
 #include "params.hpp"
 #include "utils.hpp"
 #ifdef USE_FPGA
@@ -42,21 +43,23 @@ inline void TwistFpgaIFFT(std::array<double, N> &res, const std::array<uint32_t,
     fftFpgaLvl1.execute_reverse_torus32(res.data(), a.data());
 }
 
+namespace TFHEpp {
 template <class P>
-inline void TwistFpgaFFTrescale(TFHEpp::Polynomial<P> &res, const TFHEpp::PolynomialInFD<P> &a)
+inline void TwistFpgaFFTrescale(Polynomial<P> &res, const PolynomialInFD<P> &a)
 {
     if constexpr (std::is_same_v<P, TFHEpp::lvl1param>) {
         if constexpr (std::is_same_v<typename P::T, uint32_t>)
             fftFpgaLvl1.execute_direct_torus32_rescale(res.data(), a.data(),
-                                                    P::delta);
+                                                       P::delta);
         else if constexpr (std::is_same_v<typename P::T, uint64_t>)
             fftFpgaLvl1.execute_direct_torus64_rescale(res.data(), a.data(),
-                                                    P::delta);
+                                                       P::delta);
         else
-            static_assert(TFHEpp::false_v<typename P::T>, "TwistFpgaFFTrescale!");
+            static_assert(false_v<typename P::T>, "TwistFpgaFFTrescale!");
     }
     else
-        static_assert(TFHEpp::false_v<typename P::T>, "TwistFpgaFFTrescale!!");
+        static_assert(false_v<typename P::T>, "TwistFpgaFFTrescale!!");
+}
 }
 
 #else
@@ -86,11 +89,11 @@ inline void TwistFpgaIFFT(std::array<double, N> &res, const std::array<uint32_t,
     fftplvl1.execute_reverse_torus32(res.data(), a.data());
 }
 
-
+namespace TFHEpp {
 template <class P>
-inline void TwistFpgaFFTrescale(TFHEpp::Polynomial<P> &res, const TFHEpp::PolynomialInFD<P> &a)
+inline void TwistFpgaFFTrescale(Polynomial<P> &res, const PolynomialInFD<P> &a)
 {
-    if constexpr (std::is_same_v<P, TFHEpp::lvl1param>) {
+    if constexpr (std::is_same_v<P, lvl1param>) {
         if constexpr (std::is_same_v<typename P::T, uint32_t>)
             fftplvl1.execute_direct_torus32_rescale(res.data(), a.data(),
                                                     P::delta);
@@ -98,12 +101,12 @@ inline void TwistFpgaFFTrescale(TFHEpp::Polynomial<P> &res, const TFHEpp::Polyno
             fftplvl1.execute_direct_torus64_rescale(res.data(), a.data(),
                                                     P::delta);
         else
-            static_assert(TFHEpp::false_v<typename P::T>, "TwistFpgaFFTrescale!");
+            static_assert(false_v<typename P::T>, "TwistFpgaFFTrescale!");
     }
     else
-        static_assert(TFHEpp::false_v<typename P::T>, "TwistFpgaFFTrescale!!");
+        static_assert(false_v<typename P::T>, "TwistFpgaFFTrescale!!");
 }
-
+}
 
 #endif
 
