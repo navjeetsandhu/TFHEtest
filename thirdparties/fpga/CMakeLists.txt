@@ -1,5 +1,3 @@
-file(COPY libs/fftfpga/libfftfpga.a DESTINATION ${CMAKE_CURRENT_BINARY_DIR} FILE_PERMISSIONS OWNER_READ OWNER_EXECUTE)
-
 set(SRCS_FPGAPROC fpga.cpp fft_processor_fpga.cpp)
 set(FPGAPROC_HEADERS fpga.h fft_processor_fpga.h)
 add_library(fpgaproc STATIC ${SRCS_FPGAPROC} ${FPGAPROC_HEADERS})
