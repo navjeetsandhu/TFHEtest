@@ -41,20 +41,12 @@ if(USE_FPGA)
           "${TFHEpp_DEFINITIONS};USE_FPGA"
           PARENT_SCOPE)
   add_compile_definitions(USE_FPGA)
-  add_subdirectory(thirdparties/fftfpga)
-  add_subdirectory(thirdparties/fpga)
   # build external dependencies
   message("-- Building external dependencies")
   include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/extDep.cmake)
   find_package(IntelFPGAOpenCL REQUIRED)
-endif()
-
-
-# For OpenMP
-find_package(OpenMP)
-if(OpenMP_FOUND)
-  message("-- found OpenMP package")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  add_subdirectory(thirdparties/fftfpga)
+  add_subdirectory(thirdparties/fpga)
 endif()
 
 
