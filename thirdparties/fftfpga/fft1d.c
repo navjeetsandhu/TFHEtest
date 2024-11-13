@@ -10,7 +10,7 @@
 #include "CL/opencl.h"
 
 #include "fpga_state.h"
-#include "fftfpga/fftfpga.h"
+#include "fftfpga.h"
 #include "svm.h"
 #include "opencl_utils.h"
 #include "misc.h"
