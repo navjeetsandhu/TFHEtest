@@ -1,24 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
-project(fftfpga VERSION 2.0
-        DESCRIPTION "APIs for FFT using FPGAs"
-        LANGUAGES C CXX)
-
-##
-# Generate host executable that is required to call OpenCL kernel bitstreams
-# Target: host
-##
-add_library(${PROJECT_NAME} STATIC
-        fftfpga.c fft1d.c svm.c opencl_utils.c misc.c)
-
-target_compile_options(${PROJECT_NAME}
-        PRIVATE -Wall -Werror)
-
-if(USE_DEBUG)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG)
-endif()
-
-target_include_directories(${PROJECT_NAME}
-        PRIVATE src
-        PUBLIC ${IntelFPGAOpenCL_INCLUDE_DIRS} ${PROJECT_SOURCE_DIR}/include)
-
-target_link_libraries(${PROJECT_NAME}
+set(SRCS_FFTFPGA fftfpga.c fft1d.c svm.c opencl_utils.c misc.c)
+set(FFTFPGA_HEADERS misc.h opencl_utils.h svm.h fftfpga.h)
+add_library(fpgaproc STATIC ${SRCS_FFTFPGA} ${FFTFPGA_HEADERS})
+target_include_directories(fftfpga PUBLIC ${PROJECT_SOURCE_DIR}/include)
