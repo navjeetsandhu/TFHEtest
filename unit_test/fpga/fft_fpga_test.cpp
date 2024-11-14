@@ -1,8 +1,8 @@
 #include "mult_fft.hpp"
 #include "mult_fft_fpga.hpp"
-#include"utils2.hpp"
 #include <numeric>
 #include <cmath>
+#include "c_assert.hpp"
 
 template <int nbits>
 void test_fft(const std::array<uint64_t, 1 << nbits>& p1)
