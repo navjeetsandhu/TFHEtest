@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include<iostream>
-#include <vector>
+#include <array>
 
 #define c_assert(condition) \
 do { \
