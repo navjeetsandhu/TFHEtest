@@ -25,6 +25,12 @@ TFHEfft uses this as a Cryptographically Secure Pseudo-Random Number Generator (
 Cereal is a header-only C++11 serialization library. TFHEfft uses this to export ciphertexts and keys. Cereal is treated by the git submodule.
 
 ### FFTW3
+[FFTW](https://www.fftw.org/) is one of the most famous FFT libraries.
+To install FFT libraries:
+$ sudo apt-get install libfftw3-dev
+To check where the install put stuff (not the install would have installed additional packages in addition to just the base libfftw3 package.
+$ dpkg -L libfftw3-dev
+
 TFHEfft can use fftw3 with following script
 ./fftBuild.sh 1
 
