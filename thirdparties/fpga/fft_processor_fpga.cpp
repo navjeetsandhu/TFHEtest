@@ -8,12 +8,14 @@
 
 
 #define CAST_DOUBLE_TO_UINT32(d) ((uint32_t)((int64_t)(d)))
+#define max_batch 6
+
 
 FFT_Processor_FPGA::FFT_Processor_FPGA(const int32_t N)
     : _2N(2 * N), N(N), Ns2(N / 2)
 {
-    inbuf = new float2[Ns2]();
-    outbuf = new float2[Ns2]();
+    inbuf = new float2[Ns2*max_batch]();
+    outbuf = new float2[Ns2*max_batch]();
 
     for (int i = 0; i < Ns2; i++) {
         double value = (double)i * M_PI / (double)N;
