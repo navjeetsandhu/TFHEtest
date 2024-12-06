@@ -63,7 +63,7 @@ void fpga_close() {
  * @param  inv  : int toggle to activate backward FFT
  * @return int : time taken in milliseconds for data transfers and execution
  */
-fpga_t fpga_fft(const unsigned num, const float2 *inp, float2 *out, const bool inv, const unsigned batch = 1)
+fpga_t fpga_fft(const unsigned num, const float2 *inp, float2 *out, const bool inv, const unsigned batch)
 {
     fpga_t runtime ={0, 0, 0, 0,0, false};
 
