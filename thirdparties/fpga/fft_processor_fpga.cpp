@@ -24,19 +24,6 @@ FFT_Processor_FPGA::FFT_Processor_FPGA(const int32_t N)
     fpga_initialize();
 }
 
-void FFT_Processor_FPGA::execute_reverse_int(double *res, const int32_t *a)
-{
-    for (int i = 0; i < Ns2; i++) {
-        auto tmp = twist[i] * std::complex((double)a[i], (double)a[Ns2 + i]);
-        inbuf[i].x = tmp.real();
-        inbuf[i].y = tmp.imag();
-    }
-    runTimeRc = fpga_fft(Ns2, inbuf, outbuf, false);
-    for (int i = 0; i < Ns2; i++) {
-        res[i] = outbuf[i].x;
-        res[i + Ns2] = outbuf[i].y;
-    }
-}
 
 void FFT_Processor_FPGA::execute_reverse_torus32(double *res, const uint32_t *a)
 {
