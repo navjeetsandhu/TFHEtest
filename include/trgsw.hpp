@@ -35,10 +35,10 @@ TRGSWFFT<P> ApplyFFT2trgsw(const TRGSW<P> &trgsw)
     if constexpr (std::is_same_v<P, lvl1param>)
     {
 #ifdef USE_FPGA
-    return ApplyFFT2trgswBatch(trgsw);
+    return ApplyFFT2trgswBatch<P>(trgsw);
 #endif
     }
-    return ApplyFFT2trgswIndividual(trgsw);
+    return ApplyFFT2trgswIndividual<P>(trgsw);
 }
 
 template <class P>
