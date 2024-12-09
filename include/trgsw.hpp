@@ -15,26 +15,7 @@ TRGSWFFT<P> ApplyFFT2trgswBatch(const TRGSW<P> &trgsw)
 {
     alignas(64) TRGSWFFT<P> trgswfft;
     constexpr unsigned batch = (P::k + 1) * P::l * (P::k + 1);
-
-    /*
-    constexpr unsigned size = batch * P::n;
-    std::array<double, size> res;
-    std::array<uint32_t, size> a;
-
-    int index = 0;
-    for (int i = 0; i < (P::k + 1) * P::l; i++)
-        for (int j = 0; j < (P::k + 1); j++)
-            for (int k = 0; k < (P::n); k++)
-                a[index++] = trgsw[i][j][k];
-*/
     TwistFpgaIFFTbatch(trgswfft[0][0].data(), trgsw[0][0].data(), batch);
-  /*
-    index = 0;
-    for (int i = 0; i < (P::k + 1) * P::l; i++)
-        for (int j = 0; j < (P::k + 1); j++)
-            for (int k = 0; k < (P::n); k++)
-                trgswfft[i][j][k] = res[index++];
-*/
     return trgswfft;
 }
 
