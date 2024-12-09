@@ -18,12 +18,13 @@ TRGSWFFT<P> ApplyFFT2trgswBatch(const TRGSW<P> &trgsw)
     constexpr unsigned size = batch * P::n;
     std::array<double, size> res;
     std::array<uint32_t, size> a;
-    std::cout <<"B: " << batch << " S: " << size << " ";
+
     int index = 0;
     for (int i = 0; i < (P::k + 1) * P::l; i++)
         for (int j = 0; j < (P::k + 1); j++)
             for (int k = 0; k < (P::n); k++)
                 a[index++] = trgsw[i][j][k];
+
     TwistFpgaIFFTbatch(res.data(), a.data(), batch);
 
     for (int i = 0; i < (P::k + 1) * P::l; i++)
@@ -53,7 +54,7 @@ TRGSWFFT<P> ApplyFFT2trgsw(const TRGSW<P> &trgsw)
     if constexpr (std::is_same_v<P, lvl1param>)
     {
 #ifdef USE_FPGA
-    return ApplyFFT2trgswIndividual<P>(trgsw);
+    return ApplyFFT2trgswBatch<P>(trgsw);
 #endif
     }
     return ApplyFFT2trgswIndividual<P>(trgsw);
