@@ -7,6 +7,15 @@
 #ifdef USE_FPGA
 #include <fft_processor_fpga.h>
 
+inline void TwistFpgaFFTbatch(uint32_t *a, const double *res, unsigned batch)
+{
+    fftFpgaLvl1.execute_direct_torus32(a,res,batch);
+}
+inline void TwistFpgaIFFTbatch(double *res, const uint32_t *a, unsigned batch)
+{
+    fftFpgaLvl1.execute_reverse_torus32(res,a,batch);
+}
+
 template <int N>
 inline void TwistFpgaFFT(std::array<uint64_t, N> &res, const std::array<double, N> &a)
 {
