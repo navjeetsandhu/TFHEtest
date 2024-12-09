@@ -13,7 +13,7 @@ inline void TwistFpgaFFTbatch(uint32_t *a, const double *res, unsigned batch)
 }
 inline void TwistFpgaIFFTbatch(double *res, const uint32_t *a, unsigned batch)
 {
-    std::cout << "?";
+    //std::cout << "?";
     fftFpgaLvl1.execute_reverse_torus32(res,a,batch);
 }
 
