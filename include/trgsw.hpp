@@ -10,13 +10,35 @@
 namespace TFHEpp {
 
 template <class P>
-TRGSWFFT<P> ApplyFFT2trgsw(const TRGSW<P> &trgsw)
+TRGSWFFT<P> ApplyFFT2trgswBatch(const TRGSW<P> &trgsw)
 {
     alignas(64) TRGSWFFT<P> trgswfft;
     for (int i = 0; i < (P::k + 1) * P::l; i++)
         for (int j = 0; j < (P::k + 1); j++)
             TwistIFFT<P>(trgswfft[i][j], trgsw[i][j]);
     return trgswfft;
+}
+
+template <class P>
+TRGSWFFT<P> ApplyFFT2trgswIndividual(const TRGSW<P> &trgsw)
+{
+    alignas(64) TRGSWFFT<P> trgswfft;
+    for (int i = 0; i < (P::k + 1) * P::l; i++)
+        for (int j = 0; j < (P::k + 1); j++)
+            TwistIFFT<P>(trgswfft[i][j], trgsw[i][j]);
+    return trgswfft;
+}
+
+template <class P>
+TRGSWFFT<P> ApplyFFT2trgsw(const TRGSW<P> &trgsw)
+{
+    if constexpr (std::is_same_v<P, lvl1param>)
+    {
+#ifdef USE_FPGA
+    return ApplyFFT2trgswBatch(trgsw);
+#endif
+    }
+    return ApplyFFT2trgswIndividual(trgsw);
 }
 
 template <class P>
