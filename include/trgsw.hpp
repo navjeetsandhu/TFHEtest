@@ -24,7 +24,7 @@ TRGSWFFT<P> ApplyFFT2trgswBatch(const TRGSW<P> &trgsw)
         for (int j = 0; j < (P::k + 1); j++)
             for (int k = 0; k < (P::n); k++)
                 a[index++] = trgsw[i][j][k];
-    TwistFpgaIFFTbatch(res, a, batch);
+    TwistFpgaIFFTbatch(res.data(), a.data(), batch);
 
     for (int i = 0; i < (P::k + 1) * P::l; i++)
         for (int j = 0; j < (P::k + 1); j++)
