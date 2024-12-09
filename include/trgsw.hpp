@@ -7,15 +7,30 @@
 #include "params.hpp"
 #include "trlwe.hpp"
 #include "decomposition.hpp"
+#include "mult_fft_fpga.hpp"
 namespace TFHEpp {
 
 template <class P>
 TRGSWFFT<P> ApplyFFT2trgswBatch(const TRGSW<P> &trgsw)
 {
     alignas(64) TRGSWFFT<P> trgswfft;
+    constexpr unsigned batch = (P::k + 1) * P::l * (P::k + 1);
+    constexpr unsigned size = batch * P::n;
+    std::array<double, size> res;
+    std::array<uint32_t, size> a;
+    std::cout <<"B: " << batch << " S: " << size << " ";
+    int index = 0;
     for (int i = 0; i < (P::k + 1) * P::l; i++)
         for (int j = 0; j < (P::k + 1); j++)
-            TwistIFFT<P>(trgswfft[i][j], trgsw[i][j]);
+            for (int k = 0; k < (P::n); k++)
+                a[index++] = trgsw[i][j][k];
+    TwistFpgaIFFTbatch(res, a, batch);
+
+    for (int i = 0; i < (P::k + 1) * P::l; i++)
+        for (int j = 0; j < (P::k + 1); j++)
+            for (int k = 0; k < (P::n); k++)
+                trgswfft[i][j][k] = res[index++];
+
     return trgswfft;
 }
 
