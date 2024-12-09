@@ -37,11 +37,11 @@ TRGSWFFT<P> ApplyFFT2trgswBatch(const TRGSW<P> &trgsw)
 template <class P>
 TRGSWFFT<P> ApplyFFT2trgswIndividual(const TRGSW<P> &trgsw)
 {
+    std::cout << "&";
     alignas(64) TRGSWFFT<P> trgswfft;
     for (int i = 0; i < (P::k + 1) * P::l; i++)
         for (int j = 0; j < (P::k + 1); j++)
         {
-            std::cout << "&";
             TwistIFFT<P>(trgswfft[i][j], trgsw[i][j]);
          }
     return trgswfft;
