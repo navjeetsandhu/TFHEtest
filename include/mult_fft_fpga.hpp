@@ -98,6 +98,13 @@ inline void TwistFpgaIFFT(std::array<double, N> &res, const std::array<uint32_t,
     fftplvl1.execute_reverse_torus32(res.data(), a.data());
 }
 
+inline void TwistFpgaFFTbatch(uint32_t *a, const double *res, unsigned batch)
+{
+}
+inline void TwistFpgaIFFTbatch(double *res, const uint32_t *a, unsigned batch)
+{
+}
+
 namespace TFHEpp {
 template <class P>
 inline void TwistFpgaFFTrescale(Polynomial<P> &res, const PolynomialInFD<P> &a)
@@ -133,9 +140,4 @@ void PolyMulFpgaFFT(std::array<T, N> &res, const std::array<T, N>  &a,
 
 
 
-inline void TwistFpgaFFTbatch(uint32_t *a, const double *res, unsigned batch)
-{
-}
-inline void TwistFpgaIFFTbatch(double *res, const uint32_t *a, unsigned batch)
-{
-}
+
