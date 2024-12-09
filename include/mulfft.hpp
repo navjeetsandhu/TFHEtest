@@ -13,6 +13,7 @@ namespace TFHEpp {
 template <class P>
 inline void TwistFFT(Polynomial<P> &res, const PolynomialInFD<P> &a)
 {
+    std::cout << "#";
     if constexpr (std::is_same_v<P, lvl1param>)
         TwistFpgaFFT<P::n>(res, a);
     else if constexpr (std::is_same_v<typename P::T, uint64_t>)
