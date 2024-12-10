@@ -104,7 +104,7 @@ inline void PolyMulNaive(Polynomial<P> &res, const Polynomial<P> &a,
 }
 
 template <class P>
-inline void PolyMulFFT(Polynomial<P> &res, const Polynomial<P> &a,
+inline void PolyMulFFTbatch(Polynomial<P> &res, const Polynomial<P> &a,
                        const Polynomial<P> &b)
 {
     alignas(64) std::array<Polynomial<P>, 2> input{a,b};
@@ -116,6 +116,31 @@ inline void PolyMulFFT(Polynomial<P> &res, const Polynomial<P> &a,
     TwistFFT<P>(res, output[0]);
 }
 
+template <class P>
+inline void PolyMulFFTindividual(Polynomial<P> &res, const Polynomial<P> &a,
+                       const Polynomial<P> &b)
+{
+    alignas(64) PolynomialInFD<P> ffta;
+    TwistIFFT<P>(ffta, a);
+    alignas(64) PolynomialInFD<P> fftb;
+    TwistIFFT<P>(fftb, b);
+    MulInFD<P::n>(ffta, fftb);
+    TwistFFT<P>(res, ffta);
+}
+
+
+template <class P>
+inline void PolyMulFFT(Polynomial<P> &res, const Polynomial<P> &a,
+                       const Polynomial<P> &b)
+{
+    if constexpr (std::is_same_v<P, lvl1param>)
+    {
+#ifdef USE_FPGA
+        return PolyMulFFTbatch<P>(res,a,b);
+#endif
+    }
+    return PolyMulFFTindividual<P>(res,a,b);
+}
 
 template <class P>
 inline void PolyMul(Polynomial<P> &res, const Polynomial<P> &a,

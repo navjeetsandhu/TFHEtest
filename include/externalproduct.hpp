@@ -35,7 +35,8 @@ void trgswfftExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
                               trgswfft[i + k * P::l][m]);
         }
     }
-    TwistFpgaFFTbatch(res[0].data(), restrlwefft[0].data(),P::k + 1);
+    for (int k = 0; k < P::k + 1; k++) TwistFFT<P>(res[k], restrlwefft[k]);
+    //TwistFpgaFFTbatch(res[0].data(), restrlwefft[0].data(),P::k + 1);
 }
 
 template <class P>
