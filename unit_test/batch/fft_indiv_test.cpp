@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
         str_stream >> num_test;
     }
 
-    cout << "num iterations: " << num_test << endl;
+    cout << "num iterations: " << num_test << std::endl;
     constexpr int nbit = 10;
     test_fft_p<uint32_t,nbit>(num_test);
     return 0;
