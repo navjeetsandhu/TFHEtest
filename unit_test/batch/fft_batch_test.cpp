@@ -23,7 +23,7 @@ void test_fft()
 
     auto finish1 = std::chrono::high_resolution_clock::now();
 
-    TwistFpgaIFFTbatch(result.data(), fft.data(), batch);
+    TwistFpgaFFTbatch(result.data(), fft.data(), batch);
 
     auto finish = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = finish - start;
