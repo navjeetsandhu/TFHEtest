@@ -9,12 +9,11 @@ template <int nbits,  int batch>
 void test_fft()
 {
     constexpr int N = 1 << nbits;
-    int i;
     constexpr unsigned size = batch *N;
     std::array<uint32_t, size> result{};
     std::fill(result.begin(), result.end(), 0);
 
-    std::array<P,  size> p1{};
+    std::array<uint32_t,  size> p1{};
     std::iota(p1.begin(), p1.end(), 1);
 
     auto start = std::chrono::high_resolution_clock::now();
