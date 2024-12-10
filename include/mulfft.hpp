@@ -107,12 +107,13 @@ template <class P>
 inline void PolyMulFFT(Polynomial<P> &res, const Polynomial<P> &a,
                        const Polynomial<P> &b)
 {
-    alignas(64) PolynomialInFD<P> ffta;
-    TwistIFFT<P>(ffta, a);
-    alignas(64) PolynomialInFD<P> fftb;
-    TwistIFFT<P>(fftb, b);
-    MulInFD<P::n>(ffta, fftb);
-    TwistFFT<P>(res, ffta);
+    alignas(64) std::array<Polynomial<P>, 2> input{a,b};
+    alignas(64) std::array<PolynomialInFD<P>, 2> output;
+
+    TwistFpgaIFFTbatch(output[0].data(), input[0].data(), 2);
+
+    MulInFD<P::n>(output[0], output[1]);
+    TwistFFT<P>(res, output[0]);
 }
 
 
