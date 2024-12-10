@@ -19,11 +19,11 @@ void test_fft()
     auto start = std::chrono::high_resolution_clock::now();
 
     alignas(64) std::array<double, size> fft{};
-    TwistFpgaIFFTbatch(fft, p1, batch);
+    TwistFpgaIFFTbatch(fft.data(), p1.data(), batch);
 
     auto finish1 = std::chrono::high_resolution_clock::now();
 
-    TwistFpgaIFFTbatch(result, fft, batch);
+    TwistFpgaIFFTbatch(result.data(), fft.data(), batch);
 
     auto finish = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> elapsed = finish - start;
