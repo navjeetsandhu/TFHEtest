@@ -11,6 +11,19 @@
 namespace TFHEpp {
 
 template <class P>
+void twistFFTbatch(TRLWE<P> &res, const TRLWEInFD<P> restrlwefft)
+{
+    TwistFpgaFFTbatch(res[0].data(), restrlwefft[0].data(),P::k + 1);
+}
+
+template <class P>
+void twistFFTindividual(TRLWE<P> &res, const TRLWEInFD<P> restrlwefft)
+{
+    for (int k = 0; k < P::k + 1; k++) TwistFFT<P>(res[k], restrlwefft[k]);
+}
+
+
+template <class P>
 void trgswfftExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
                              const TRGSWFFT<P> &trgswfft)
 {
@@ -35,8 +48,15 @@ void trgswfftExternalProduct(TRLWE<P> &res, const TRLWE<P> &trlwe,
                               trgswfft[i + k * P::l][m]);
         }
     }
-    for (int k = 0; k < P::k + 1; k++) TwistFFT<P>(res[k], restrlwefft[k]);
-    //TwistFpgaFFTbatch(res[0].data(), restrlwefft[0].data(),P::k + 1);
+
+    if constexpr (std::is_same_v<P, lvl1param>)
+    {
+#ifdef USE_FPGA
+        return twistFFTbatch<P>(res,restrlwefft);
+#endif
+    }
+    return twistFFTindividual<P>(res,restrlwefft);
+
 }
 
 template <class P>
