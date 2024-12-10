@@ -3,49 +3,48 @@
 #include <numeric>
 #include <cmath>
 #include "c_assert.hpp"
+#include <chrono>
 
-
-template <int nbits>
-void test_fft(const std::array<uint32_t, 1 << nbits>& p1)
+template <int nbits,  int batch>
+void test_fft()
 {
-
-    std::string string_msg = "Input p1";
     constexpr int N = 1 << nbits;
-
-    print_results<uint32_t>(string_msg, p1.data(), p1.size());
-
-    std::array<uint32_t, N> result{};
+    int i;
+    constexpr unsigned size = batch *N;
+    std::array<uint32_t, size> result{};
     std::fill(result.begin(), result.end(), 0);
 
-    alignas(64) std::array<double, N> fft{};
-    TwistFpgaIFFT<N>(fft, p1);
-
-
-    string_msg = "TwistIFFT 32 bit";
-    print_results<double>(string_msg,  fft.data(), fft.size());
-
-    TwistFpgaFFT<N>(result, fft);
-    string_msg = "TwistFFT 32 bit";
-    print_results<int32_t>(string_msg,  reinterpret_cast<int32_t*>(result.data()), result.size());
-}
-
-
-
-template <class P, int nbits>
-void test_fft_p()
-{
-    constexpr int N = 1 << nbits;
-
-    std::array<P,  N> p1{};
-    std::array<P,  N> p2{};
+    std::array<P,  size> p1{};
     std::iota(p1.begin(), p1.end(), 1);
-    test_fft<nbits>(p1);
+
+    auto start = std::chrono::high_resolution_clock::now();
+
+    alignas(64) std::array<double, size> fft{};
+    TwistFpgaIFFTbatch(fft, p1, batch);
+
+    auto finish1 = std::chrono::high_resolution_clock::now();
+
+    TwistFpgaIFFTbatch(result, fft, batch);
+
+    auto finish = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed = finish - start;
+    std::chrono::duration<double, std::milli> elapsed1 = finish1 - start;
+    std::chrono::duration<double, std::milli> elapsed2 = finish - finish1;
+
+    std::cout << "batch: " << batch << " s\n";
+    std::cout << "Total Elapsed IFFT time: " << elapsed1.count() << " ms\n";
+    std::cout << "Total Elapsed FFT time: " << elapsed2.count() << " ms\n";
+    std::cout << "Total Elapsed time: " << elapsed.count() << " ms\n";
 }
+
+
+
+
 
 int main()
 {
     constexpr int nbit = 10;
-    test_fft_p<uint32_t,nbit>();
-
+    constexpr int batch = 2500;
+    test_fft<nbit, batch>();
     return 0;
 }
