@@ -19,7 +19,7 @@ void test_fft(const std::array<uint32_t, 1 << nbits>& p1, uint32_t num_test)
     for (i=0; i< num_test; i++) TwistFpgaIFFT<N>(fft, p1);
 
     auto finish1 = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> elapsed = finish1 - start;
+    std::chrono::duration<double, std::milli> elapsed = finish1 - start;
 
     for (i=0; i< num_test; i++) TwistFpgaFFT<N>(result, fft);
 
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
         str_stream >> num_test;
     }
 
-    cout << "num iterations: " << num_test << std::endl;
+    std::cout << "num iterations: " << num_test << std::endl;
     constexpr int nbit = 10;
     test_fft_p<uint32_t,nbit>(num_test);
     return 0;
