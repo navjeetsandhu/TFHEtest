@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 
     std::cout << "num iterations: " << num_test << std::endl;
     constexpr int nbit = 10;
-    constexpr int batch = 100;
+    constexpr int batch = 500;
     test_fft<nbit, batch>(num_test);
     return 0;
 }
