@@ -1,0 +1,28 @@
+Currently, FPGA is 100 times slower than spqlios implementation.
+For one Gate operation, we do 3816 times IFFT (reverse torus) and 1272 times FFT (direct torus). = Total 5088
+
+
+Time taken for one Nand operation is 1650 ms
+
+
+TwistIFFT 14.   ApplyFFT2trgsw. in trgsw.hpp
+TwistIFFT 6.     trgswfftExternalProduct() in externalproduct.hpp   ===>
+TwistIFFT 2. PolyMulFFT() in mulfft.hpp
+TwistFFT 2 trgswfftExternalProduct() in externalproduct.hpp
+
+Time taken for one Nand operation using the above batch:
+1450 ms
+
+
+batch: 500 (simultaneously) num iterations: 5
+total run: 2500 FFT and 2500 IFFT
+69 ms
+
+batch: 20 (simultaneously) num iterations: 125
+total run: 2500 FFT and 2500 IFFT
+162 ms.
+
+
+batch: 1 num iterations: 2500
+total run: 2500 FFT and 2500 IFFT
+1771 ms.
