@@ -31,16 +31,13 @@ void test_fft(uint32_t num_test)
     std::chrono::duration<double, std::milli> elapsed1 = finish1 - start;
     std::chrono::duration<double, std::milli> elapsed2 = finish - finish1;
 
-    std::cout << "batch: " << batch << " s\n";
+    std::cout << "batch: " << batch << "\n";
     std::cout << "num iterations: " << num_test << std::endl;
     std::cout << "total run: " << batch * num_test << std::endl;
     std::cout << "Total Elapsed IFFT time: " << elapsed1.count() << " ms\n";
     std::cout << "Total Elapsed FFT time: " << elapsed2.count() << " ms\n";
     std::cout << "Total Elapsed time: " << elapsed.count() << " ms\n";
 }
-
-
-
 
 
 int main(int argc, char* argv[])
