@@ -6,6 +6,12 @@ TFHEfft is full Scracthed pure C++ Ver. of TFHE.
 ### build using FPGA 
 ./fftBuild.sh
 
+FPGA do batch processing at following code location:
+TwistIFFT 14: ApplyFFT2trgsw. in trgsw.hpp
+TwistIFFT 2:  PolyMulFFT() in mulfft.hpp
+TwistFFT 2:   trgswfftExternalProduct() in externalproduct.hpp
+
+
 ### build using FFTW3
 ./fftBuild.sh 1
 
